@@ -20,6 +20,9 @@ SERVER = srcs/server/
 CLIENT = srcs/client/
 BUILD_DIR = build/
 
+#utils
+LINE = "\n"
+
 SRCS = 	srcs/main.cpp \
 		$(SERVER)server.cpp \
 		$(CLIENT)client.cpp 
@@ -31,32 +34,38 @@ INCLUDES = -I./includes
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo "$(YELLOW)[Linking]$(RESET) Creating executable: $(NAME)"
+	@echo $(LINE)
+	@echo "$(YELLOW) [Linking  ]$(RESET) Creating executable: $(NAME)"
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS)
-	@echo "\n$(GREEN)[Build complete]$(RESET) $(NAME) is ready !\n"
+	@echo $(LINE)
+	@echo "$(GREEN) [Built    ] $(NAME)$(RESET) is ready !"
+	@echo $(LINE)
 
 $(BUILD_DIR)%.o: %.cpp
 	@mkdir -p $(dir $@)
-	@echo "$(BLUE)[Compiling]$(RESET) $<"
+	@echo "$(BLUE) [Compiling]$(RESET) $<"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	clear
-	@echo "$(RED)[Cleaning]$(RESET) Removing object files"
+	@echo $(LINE)
+	@echo "$(RED) [Cleaning ]$(RESET) Removing object files"
 	rm -rf $(BUILD_DIR)
 
 fclean: clean
-	@echo "$(RED)[Cleaning]$(RESET) Removing executable: $(NAME)"
+	@echo "$(RED) [Cleaning ]$(RESET) Removing executable: $(NAME)"
+	@echo $(LINE)
 	rm -f $(NAME)
 
 re: fclean all
 
 run: re
-	@echo "$(YELLOW)[Running]$(RESET) Executing $(NAME) on port 6667"
+	@echo "$(YELLOW) [Running  ]$(RESET) Executing $(NAME) on port 6667"
+	@echo $(LINE)
 	./$(NAME) 6667
 
 valgrind: re
-	@echo "$(YELLOW)[Valgrind]$(RESET) Running memory analysis with Valgrind"
+	@echo "$(YELLOW) [Valgrind]$(RESET) Running memory analysis with Valgrind"
 	valgrind --leak-check=full ./$(NAME) 6667
 
 
