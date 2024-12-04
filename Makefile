@@ -20,9 +20,6 @@ SERVER = srcs/server/
 CLIENT = srcs/client/
 BUILD_DIR = build/
 
-#utils
-LINE = "\n"
-
 SRCS = 	srcs/main.cpp \
 		$(SERVER)server.cpp \
 		$(CLIENT)client.cpp 
@@ -34,12 +31,12 @@ INCLUDES = -I./includes
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo $(LINE)
+	@echo 
 	@echo "$(YELLOW) [Linking  ]$(RESET) Creating executable: $(NAME)"
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) $(LDFLAGS)
-	@echo $(LINE)
+	@echo 
 	@echo "$(GREEN) [Built    ] $(NAME)$(RESET) is ready !"
-	@echo $(LINE)
+	@echo 
 
 $(BUILD_DIR)%.o: %.cpp
 	@mkdir -p $(dir $@)
@@ -48,20 +45,20 @@ $(BUILD_DIR)%.o: %.cpp
 
 clean:
 	clear
-	@echo $(LINE)
+	@echo 
 	@echo "$(RED) [Cleaning ]$(RESET) Removing object files"
 	rm -rf $(BUILD_DIR)
 
 fclean: clean
 	@echo "$(RED) [Cleaning ]$(RESET) Removing executable: $(NAME)"
-	@echo $(LINE)
+	@echo 
 	rm -f $(NAME)
 
 re: fclean all
 
 run: re
 	@echo "$(YELLOW) [Running  ]$(RESET) Executing $(NAME) on port 6667"
-	@echo $(LINE)
+	@echo 
 	./$(NAME) 6667
 
 valgrind: re
