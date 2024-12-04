@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:22:25 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/04 03:40:55 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/04 23:02:37 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,38 @@
 #include "../../client/includes/client.hpp"
 
 #include <iostream>
+
 #include <vector>
+
 #include <stdlib.h>
+#include <poll.h>
+#include <unistd.h>
+
+#include <csignal>
 
 class Server {
 	
 	private :
 		int	_Port;
-		// int _SocketFd;
+		int _SocketFd;
 		
-		static bool Signal;
+		static bool _Signal;
 
 		std::vector<Client> clients;
-		// std::vector<struct pollfd> fds;
+		std::vector<struct pollfd> fds;
 
 	public :
-		Server(int Port);		
+		//! constructors
+		Server(int Port);
 
 		//! methods
 		int	Port() const;
+		int SocketFd() const;
+		
+		static void SignalHandler(int signum);
 
+		//?cleaning
+		void	CloseFds();
+		void	ClearClients(int fd);
 
 };
