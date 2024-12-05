@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:22:25 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 01:48:50 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/05 02:52:18 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,12 @@
 #include <errno.h>
 #include <stdexcept>
 #include <string>
+#include <string.h>
 
 #include <stdlib.h>
 #include <poll.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -51,7 +53,9 @@ class Server {
 		//! methods
 		void	Init();
 		void	Run();
-
+		void	AcceptNewClient();
+		void	ReceiveNewData(int fd);
+		
 		//! getters
 		int	Port() const;
 		int SocketFd() const;

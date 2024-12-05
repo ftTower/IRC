@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 00:59:54 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 01:22:17 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/05 02:32:40 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 #define ERR_SOCKET_OPTION_ENOMEM "There was insufficient memory available for the operation to complete."
 #define ERR_SOCKET_OPTION_ENOBUFS "Insufficient resources are available in the system to complete the call."
 
-
+#define ERR_POLL_FAIL "Faild to poll"
 
 
 
