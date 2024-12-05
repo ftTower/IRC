@@ -108,10 +108,6 @@ void Server::AcceptNewClient()
 	send(C.Fd(), welcome, strlen(welcome), 0);
 }
 
-bool isNewline(char c) {
-    return c == '\n';
-}
-
 void Server::ReceiveNewData(int fd)
 {
 	char buff[1024];
@@ -127,7 +123,7 @@ void Server::ReceiveNewData(int fd)
 	else {
 		buff[bytes] = '\0';
 		std::string strBuff(buff);
-		strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isNewline), strBuff.end());
+		//strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isspace), strBuff.end());
 		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
 		<< "\t" << strBuff;   
 	}
