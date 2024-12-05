@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:44:30 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 01:56:22 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/05 02:03:27 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void Server::Init()
 void Server::Run()
 {
 	Init();
-	std::cout << GREEN_BG << BOLD_WHITE << "SERVER ON" << RESET << std::endl << BOLD_BLUE << "\tPort : " << RESET << YELLOW_TEXT << this->Port() << RESET << std::endl;
+	std::cout << GREEN_BG << BOLD_WHITE << " SERVER ON " << RESET << std::endl << BOLD_MAGENTA << "\tPort : " << RESET << LIGHT_YELLOW << this->Port() << RESET << std::endl;
 	while (!Server::_Signal)
 	{
 	}
@@ -76,7 +76,7 @@ int Server::SocketFd() const
 void Server::SignalHandler(int signum)
 {
 	(void)signum;
-	//! print for signal
+	std::cout << "\033[2K";
 	Server::_Signal = true;
 }
 
