@@ -22,6 +22,7 @@ BUILD_DIR = build/
 
 SRCS = 	srcs/main.cpp \
 		$(SERVER)server.cpp \
+		$(SERVER)serverUtils.cpp \
 		$(CLIENT)client.cpp 
 
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)%.o)
