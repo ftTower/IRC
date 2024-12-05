@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "includes/server.hpp"
+#include <algorithm>
 
 bool Server::_Signal = false; // init static variable
 
@@ -51,6 +52,14 @@ void Server::Run()
 {
 	Init();
 	std::cout << GREEN_BG << BOLD_WHITE << " SERVER ON " << RESET << std::endl << BOLD_MAGENTA << "\tPort : " << RESET << LIGHT_YELLOW << this->Port() << RESET << std::endl << BOLD_MAGENTA << "\tSocket Fd : " << RESET << LIGHT_YELLOW << this->SocketFd() << RESET << std::endl << std::endl;
+	
+	//for(size_t i = 0; i < fds.size(); i++)
+	//	std::cout << fds[i].fd << "|" << std::endl;
+	
+	
+	//for(size_t i = 0; i < clients.size(); i++)
+	//	std::cout << clients[i].Fd() << "|" << std::endl;
+	
 	while (!Server::_Signal)
 	{
 		if ((poll(&fds[0], fds.size(), -1) == -1) && Server::_Signal == false)
@@ -93,10 +102,14 @@ void Server::AcceptNewClient()
 	clients.push_back(C);
 	fds.push_back(NewPoll);
 
-	std::cout << "\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
+	std::cout << "" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
 	
 	const char *welcome = ":localhost 001 tauer :Welcome to the IRC server!\r\n";
 	send(C.Fd(), welcome, strlen(welcome), 0);
+}
+
+bool isNewline(char c) {
+    return c == '\n';
 }
 
 void Server::ReceiveNewData(int fd)
@@ -113,8 +126,10 @@ void Server::ReceiveNewData(int fd)
 	}
 	else {
 		buff[bytes] = '\0';
+		std::string strBuff(buff);
+		strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isNewline), strBuff.end());
 		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
-		<< "\t" << buff;   
+		<< "\t" << strBuff;   
 	}
 }
 
@@ -143,7 +158,7 @@ void Server::SignalHandler(int signum)
 
 void Server::CloseFds()
 {
-	for (size_t i = 0; i < fds.size(); i++)
+	for (size_t i = 0; i < clients.size(); i++)
 	{
 		//! print for logout
 		if (clients[i].Fd() >= 0)

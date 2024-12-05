@@ -14,7 +14,8 @@
 
 //!Base
 
-Client::Client() {}
+Client::Client() : _fd(-1) {
+}
 
 Client::~Client() {}
 

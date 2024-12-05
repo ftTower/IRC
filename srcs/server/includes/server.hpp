@@ -17,13 +17,14 @@
 #include "../../client/includes/client.hpp"
 
 #include <iostream>
+#include <algorithm>
 
 #include <vector>
 
 
 #include <errno.h>
 #include <stdexcept>
-#include <string>
+#include <cstring>
 #include <string.h>
 
 #include <stdlib.h>
