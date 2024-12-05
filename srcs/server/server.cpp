@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:44:30 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 03:13:02 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/05 03:35:17 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void Server::AcceptNewClient()
 
 	std::cout << "\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
 	
-	const char *welcome = ":localhost 001 testuser :Welcome to the IRC server!\r\n";
+	const char *welcome = ":localhost 001 tauer :Welcome to the IRC server!\r\n";
 	send(C.Fd(), welcome, strlen(welcome), 0);
 }
 
@@ -114,7 +114,7 @@ void Server::ReceiveNewData(int fd)
 	else {
 		buff[bytes] = '\0';
 		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
-		<< "\n" << buff;   
+		<< "\t" << buff;   
 	}
 }
 
