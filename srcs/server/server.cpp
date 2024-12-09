@@ -53,13 +53,6 @@ void Server::Run()
 	Init();
 	std::cout << GREEN_BG << BOLD_WHITE << " SERVER ON " << RESET << std::endl << BOLD_MAGENTA << "\tPort : " << RESET << LIGHT_YELLOW << this->Port() << RESET << std::endl << BOLD_MAGENTA << "\tSocket Fd : " << RESET << LIGHT_YELLOW << this->SocketFd() << RESET << std::endl << std::endl;
 	
-	//for(size_t i = 0; i < fds.size(); i++)
-	//	std::cout << fds[i].fd << "|" << std::endl;
-	
-	
-	//for(size_t i = 0; i < clients.size(); i++)
-	//	std::cout << clients[i].Fd() << "|" << std::endl;
-	
 	while (!Server::_Signal)
 	{
 		if ((poll(&fds[0], fds.size(), -1) == -1) && Server::_Signal == false)
@@ -104,9 +97,29 @@ void Server::AcceptNewClient()
 
 	std::cout << "" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
 	
-	const char *welcome = ":localhost 001 tauer :Welcome to the IRC server!\r\n";
+	const char *welcome = ":localhost 001 tauer :Belle ip mon reuf!\r\n";
 	send(C.Fd(), welcome, strlen(welcome), 0);
 }
+
+void	Server::kickClient(int fd) {
+	std::cout << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+		ClearClients(fd);
+		close(fd);
+}
+
+void	Server::HandleNewData(int fd, std::string &Data) {
+	
+		if (Data.find("PING localhost") == 0)
+		{
+			const char *Pong = "PONG localhost\n";
+			std::cout << "PONGED CLIENT " << fd << std::endl;
+			send(fd, Pong, strlen(Pong), 0);
+		}
+		//strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isspace), strBuff.end());
+		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
+		<< "\t" << Data;   
+}
+
 
 void Server::ReceiveNewData(int fd)
 {
@@ -115,17 +128,12 @@ void Server::ReceiveNewData(int fd)
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 	
-	if (bytes <= 0) {
-		std::cout << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
-		ClearClients(fd);
-		close(fd);
-	}
+	if (bytes <= 0)
+		kickClient(fd);
 	else {
 		buff[bytes] = '\0';
 		std::string strBuff(buff);
-		//strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isspace), strBuff.end());
-		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
-		<< "\t" << strBuff;   
+		HandleNewData(fd, strBuff);
 	}
 }
 
@@ -146,7 +154,7 @@ int Server::SocketFd() const
 void Server::SignalHandler(int signum)
 {
 	(void)signum;
-	std::cout << "\033[2K";
+	std::cout << "\033[2K"; 
 	Server::_Signal = true;
 }
 
@@ -156,7 +164,7 @@ void Server::CloseFds()
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
-		//! print for logout
+			std::cout << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << clients[i].Fd() << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 		if (clients[i].Fd() >= 0)
 			close(clients[i].Fd());
 	}

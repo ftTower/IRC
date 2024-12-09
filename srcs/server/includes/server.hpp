@@ -57,6 +57,9 @@ class Server {
 		void	AcceptNewClient();
 		void	ReceiveNewData(int fd);
 		
+		void	HandleNewData(int fd, std::string &Data);
+		void	kickClient(int fd);
+		
 		//! getters
 		int	Port() const;
 		int SocketFd() const;
