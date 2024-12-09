@@ -19,8 +19,12 @@
 class Client
 {
   private:
+	std::string _nickName;
+  
 	int 		_fd;
 	std::string _IPadd;
+	
+	//std::vector<std::string> channelsList;
 
   public:
 	//!Base
@@ -34,4 +38,5 @@ class Client
 	//? getters
 	int 		Fd() const;
 	std::string IPadd() const;
+	std::string nickName() const;
 };

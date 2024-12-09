@@ -14,7 +14,9 @@
 
 #include "../../utils/includes/colors.hpp"
 #include "../../utils/includes/errMsg.hpp"
+
 #include "../../client/includes/client.hpp"
+#include "../../channel/includes/channel.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -45,6 +47,8 @@ class Server {
 		static bool _Signal;
 
 		std::vector<Client> clients;
+		std::vector<Channel> channels;
+
 		std::vector<struct pollfd> fds;
 
 	public :
@@ -54,11 +58,17 @@ class Server {
 		//! methods
 		void	Init();
 		void	Run();
-		void	AcceptNewClient();
-		void	ReceiveNewData(int fd);
 		
+		//! server handler
+		void	ReceiveNewData(int fd);
 		void	HandleNewData(int fd, std::string &Data);
+		void	HandleNick(int fd, const std::string &Data);
+		
+		//! Client
+		void	AcceptNewClient();
 		void	kickClient(int fd);
+		void	PongClient(int fd);
+
 		
 		//! getters
 		int	Port() const;
@@ -71,6 +81,10 @@ class Server {
 		void	CloseFds();
 		void	ClearClients(int fd);
 
+
+		//utils
+		std::string remove(const std::string &Data, char c);
+		
 };
 
 void throwSocketOptionError(int socketOptionRet, std::string optionType);

@@ -14,7 +14,7 @@
 
 //!Base
 
-Client::Client() : _fd(-1) {
+Client::Client() : _nickName("default") , _fd(-1) {
 }
 
 Client::~Client() {}
@@ -38,6 +38,11 @@ int		Client::Fd() const {
 std::string	Client::IPadd() const {
 	return (this->_IPadd);
 }
+
+std::string Client::nickName() const {
+	return (this->_nickName);
+}
+
 
 
 

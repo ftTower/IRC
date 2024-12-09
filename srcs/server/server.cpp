@@ -81,9 +81,9 @@ void Server::AcceptNewClient()
 	
 	int incomingFd = accept(SocketFd(), (sockaddr *)&(CliAdd), &len);
 	if (incomingFd == -1)
-		{std::cout << RED_BG << BOLD_RED << "failed to accept" << RESET << std::endl; return;}
+		{std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to accept" << RESET << std::endl; return;}
 	if (fcntl(incomingFd, F_SETFL, O_NONBLOCK) == -1)
-		{std::cout << RED_BG << BOLD_RED << "failed to fcntl" << RESET << std::endl; return;}
+		{std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to fcntl" << RESET << std::endl; return;}
 	
 	NewPoll.fd = incomingFd;
 	NewPoll.events = POLLIN;
@@ -95,29 +95,60 @@ void Server::AcceptNewClient()
 	clients.push_back(C);
 	fds.push_back(NewPoll);
 
-	std::cout << "" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
+	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
 	
-	const char *welcome = ":localhost 001 tauer :Belle ip mon reuf!\r\n";
-	send(C.Fd(), welcome, strlen(welcome), 0);
 }
 
 void	Server::kickClient(int fd) {
-	std::cout << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 		ClearClients(fd);
 		close(fd);
 }
 
+void	Server::PongClient(int fd) {
+	const char *Pong = "PONG localhost\n";
+	std::cout << "\t\t\t\t\t\t" << YELLOW_BG << BOLD_YELLOW "PONGED CLIENT " << fd << RESET << std::endl;
+	send(fd, Pong, strlen(Pong), 0);
+}
+
+std::string Server::remove(const std::string &Data, char c) {
+	std::string ret = "";
+	for (size_t i = 0; i < Data.size(); i++) {
+		if (Data[i] != c)
+			ret += Data[i];
+	}
+	return (ret);
+}
+
+void	Server::HandleNick(int fd, const std::string &Data) {
+	(void)Data;
+	
+	std::string Nickname = Data.substr(Data.find("NICK") + 5);
+	Nickname = Nickname.substr(0, Nickname.find("\r\n"));
+	for(size_t i = 0; i < clients.size(); i++) {
+		if (clients[i].nickName() == Nickname) {
+			std::string error = ":server 433 * " + Nickname + " :Nickname is already in use\r\n";
+			send(fd, error.c_str(), error.size(), 0);
+			return ;
+		}
+	}
+	clients[fd].nickName() = Nickname;
+	std::string welcome = ":server 001 " + Nickname + " :Welcome to the IRC server\r\n";
+	send(fd, welcome.c_str(), welcome.size(), 0);
+	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  Nickname << RESET << GREEN_BG << " Named !" << RESET << std::endl;
+}
+
 void	Server::HandleNewData(int fd, std::string &Data) {
 	
-		if (Data.find("PING localhost") == 0)
-		{
-			const char *Pong = "PONG localhost\n";
-			std::cout << "PONGED CLIENT " << fd << std::endl;
-			send(fd, Pong, strlen(Pong), 0);
+		if (Data.find("\r\n") != std::string::npos) {
+			std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
+			<< "\n" << Data;   
+			if (Data.find("PING") != std::string::npos)
+				PongClient(fd);
+			else if (Data.find("NICK") != std::string::npos)
+				HandleNick(fd, Data);
 		}
 		//strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isspace), strBuff.end());
-		std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
-		<< "\t" << Data;   
 }
 
 
@@ -164,7 +195,7 @@ void Server::CloseFds()
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
-			std::cout << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << clients[i].Fd() << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+			std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << clients[i].Fd() << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 		if (clients[i].Fd() >= 0)
 			close(clients[i].Fd());
 	}
