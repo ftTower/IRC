@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../../client/includes/client.hpp"
+#include <vector>
 
 typedef enum e_mode {
 	MODE_I,
@@ -15,11 +16,11 @@ class Channel {
 		std::string _name();
 		std::vector <Client> users; // Clients connected to channel
 		
-		std::vector <t_mode> modes;	// utiliser le typedef et push des modes ou erase pour modifier
+		std::vector <bool> modes;
 		
 	public :
 		Channel(std::string &Name);
-		~Channel();
+		//~Channel();
 	
 	
 };

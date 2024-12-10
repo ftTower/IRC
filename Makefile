@@ -61,6 +61,7 @@ run: re
 	@echo "$(YELLOW) [Running  ]$(RESET) Executing $(NAME) on port 6667"
 	@echo 
 	./$(NAME) 6667
+	make fclean
 
 valgrind: re
 	@echo "$(YELLOW) [Valgrind]$(RESET) Running memory analysis with Valgrind"
