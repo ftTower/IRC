@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:22:25 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 02:52:18 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/13 00:38:10 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 
 #include "../../client/includes/client.hpp"
 #include "../../channel/includes/channel.hpp"
+#include "../../commands/includes/commands.hpp"
+
 
 #include <iostream>
 #include <algorithm>

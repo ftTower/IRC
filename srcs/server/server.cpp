@@ -6,7 +6,7 @@
 /*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:44:30 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/05 03:35:17 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/13 02:36:14 by tauer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,6 @@ void	Server::kickClient(int fd) {
 		close(fd);
 }
 
-void	Server::PongClient(int fd) {
-	const char *Pong = "PONG localhost\n";
-	std::cout << "\t\t\t\t\t\t" << YELLOW_BG << BOLD_YELLOW "PONGED CLIENT " << fd << RESET << std::endl;
-	send(fd, Pong, strlen(Pong), 0);
-}
-
 std::string Server::remove(const std::string &Data, char c) {
 	std::string ret = "";
 	for (size_t i = 0; i < Data.size(); i++) {
@@ -119,38 +113,6 @@ std::string Server::remove(const std::string &Data, char c) {
 	}
 	return (ret);
 }
-
-void	Server::HandleNick(int fd, const std::string &Data) {
-	(void)Data;
-	
-	std::string Nickname = Data.substr(Data.find("NICK") + 5);
-	Nickname = Nickname.substr(0, Nickname.find("\r\n"));
-	for(size_t i = 0; i < clients.size(); i++) {
-		if (clients[i].nickName() == Nickname) {
-			std::string error = ":server 433 * " + Nickname + " :Nickname is already in use\r\n";
-			send(fd, error.c_str(), error.size(), 0);
-			return ;
-		}
-	}
-	clients[fd].nickName() = Nickname;
-	std::string welcome = ":server 001 " + Nickname + " :Welcome to the IRC server\r\n";
-	send(fd, welcome.c_str(), welcome.size(), 0);
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  Nickname << RESET << GREEN_BG << " Named !" << RESET << std::endl;
-}
-
-void	Server::HandleNewData(int fd, std::string &Data) {
-	
-		if (Data.find("\r\n") != std::string::npos) {
-			std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET
-			<< "\n" << Data;   
-			if (Data.find("PING") != std::string::npos)
-				PongClient(fd);
-			else if (Data.find("NICK") != std::string::npos)
-				HandleNick(fd, Data);
-		}
-		//strBuff.erase(std::remove_if(strBuff.begin(), strBuff.end(), isspace), strBuff.end());
-}
-
 
 void Server::ReceiveNewData(int fd)
 {
@@ -163,8 +125,7 @@ void Server::ReceiveNewData(int fd)
 		kickClient(fd);
 	else {
 		buff[bytes] = '\0';
-		std::string strBuff(buff);
-		HandleNewData(fd, strBuff);
+		handleCmds(fd, buff);
 	}
 }
 
