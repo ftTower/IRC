@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:44:30 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/13 02:36:14 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/13 14:37:04 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void Server::ReceiveNewData(int fd)
 		kickClient(fd);
 	else {
 		buff[bytes] = '\0';
-		handleCmds(fd, buff);
+		handleCmds(*this, fd, buff);
 	}
 }
 
@@ -174,3 +174,40 @@ void Server::ClearClients(int fd)
 			break ;
 		}
 }
+
+
+///// test commands
+
+// trouver un client dans le vector des clients via son fd
+Client &Server::findClientFd(int fd)
+{
+	for(size_t i = 0; i < clients.size(); i++)
+	{
+		Client *tmp = &clients[i];
+		if (clients[i].Fd() == fd)
+			return *tmp;
+	}
+	return (clients[0]);
+}
+
+// trouver un client dans le vector des clients via son nick
+Client &Server::findClientNick(std::string nick)
+{
+	for(size_t i = 0; i < clients.size(); i++)
+	{
+		Client *tmp = &clients[i];
+		if (clients[i].nickName() == nick)
+			return *tmp;
+	}
+	return (clients[0]);
+}
+
+bool	Server::isNickUsed(std::string name)
+{
+	for(size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (this->clients[i].nickName() == name)
+			return true;
+	}
+	return false;
+};

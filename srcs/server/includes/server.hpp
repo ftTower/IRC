@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:22:25 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/13 00:38:10 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/13 14:29:11 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,10 @@ class Server {
 		//utils
 		std::string remove(const std::string &Data, char c);
 		
+		// Commands utils
+		Client &findClientFd(int fd);
+		Client &findClientNick(std::string nick);
+		bool	isNickUsed(std::string name);
 };
 
 void throwSocketOptionError(int socketOptionRet, std::string optionType);

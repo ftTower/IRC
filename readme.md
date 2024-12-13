@@ -6,3 +6,6 @@ Ports numbered 1024 to 49151 can be registered for specific purposes and are use
 
 Dynamic or private ports (49152 to 65535) are used by client applications for outgoing connections. These ports are dynamically allocated by the operating system to clients when they initiate outgoing connections.
 
+////////
+irssi
+/connect localhost 6667

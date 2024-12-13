@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tauer <tauer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 02:49:55 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/04 02:57:13 by tauer            ###   ########.fr       */
+/*   Updated: 2024/12/13 13:13:26 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ void	Client::setFd(const int fd) {
 
 void	Client::setIPadd(const std::string &IPadd) {
 	this->_IPadd = IPadd;
+}
+
+void		Client::setNickname(std::string name){
+	this->_nickName = name;
 }
 
 //? getters
