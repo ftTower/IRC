@@ -6,19 +6,19 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 09:40:19 by lleciak           #+#    #+#             */
-/*   Updated: 2024/12/13 14:57:06 by lleciak          ###   ########.fr       */
+/*   Updated: 2024/12/16 10:49:57 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./includes/commands.hpp"
 #include "./includes/numericReplies.hpp"
 #include "../client/includes/client.hpp"
+#include <sstream>
 
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
 void	nick_cmd(Server &serv, int fd, const std::string &name)
 {
-	std::string tmpNick;
 	Client& client = serv.findClientFd(fd);
 	if (serv.isNickUsed(name))
 	{
@@ -26,7 +26,6 @@ void	nick_cmd(Server &serv, int fd, const std::string &name)
 		return;
 	}
 	client.setNickname(name);
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  name << RESET << GREEN_BG << " Named !" << RESET << std::endl;
 	/////
 
 	std::string nickname = name.substr(name.find("NICK") + 5); 
@@ -38,16 +37,29 @@ void	nick_cmd(Server &serv, int fd, const std::string &name)
 	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  nickname << RESET << GREEN_BG << " Named !" << RESET << std::endl;
 }
 
-void	user_cmd(Server &serv, int fd, const std::string &cmd)
+// On l'utilise au debut de la connexion pour specifier 
+// l'username et le realname d'un nouvel utilisateur.
+
+// Parameters: <nickname> <IP Address> <realname>
+void	user_cmd(Server &serv, int fd,const std::string &cmd)//, std::string Ip, std::string realName)
 {
 	(void)fd;
-	(void)cmd;
 	(void)serv;
+	(void)cmd;
+	// Client& client = serv.findClientFd(fd);
+	// std::vector<std::string> param;
+	// std::stringstream tmp(cmd);
+	// std::string input;
+	// while (getline(tmp, input, ' ')){
+	// 	param.push_back(input);
+	// }
 
-	// On l'utilise au debut de la connexion pour specifier 
-	// l'username et le realname d'un nouvel utilisateur.
-
-	// Parameters: <username> 0 * <realname>
+	// std::cout << param[0] + '\n' << param[1] + '\n' << param[2] + '\n' << param[3] + '\n' << std::endl;
+	// // if (serv.isNickUsed(cmd.substr())))
+	// // 	client.setNickname( + "_");
+	// // client.setNickname();
+	// // client.setIPadd();
+	// // client.setRealName();
 }
 
 void	ping_cmd(Server &serv, int fd, const std::string &cmd)

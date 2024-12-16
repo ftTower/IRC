@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 11:09:56 by lleciak           #+#    #+#             */
-/*   Updated: 2024/12/16 08:18:04 by lleciak          ###   ########.fr       */
+/*   Updated: 2024/12/16 10:49:18 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	handleCmds(Server &serv, int fd, char buff[1024])
 {
 	std::string strBuff(buff);
-	
+	std::cout << "BUFF === "<< buff<< std::endl;
 	if (strBuff.find("\r\n") == std::string::npos)
 		return ;
 	size_t pos = 0;

@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 02:49:55 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/13 13:13:26 by lleciak          ###   ########.fr       */
+/*   Updated: 2024/12/16 09:20:13 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,11 @@ void		Client::setNickname(std::string name){
 	this->_nickName = name;
 }
 
+void		Client::setRealName(std::string name){
+	this->_realName = name;
+}
+
+
 //? getters
 
 int		Client::Fd() const {
@@ -47,6 +52,9 @@ std::string Client::nickName() const {
 	return (this->_nickName);
 }
 
+std::string Client::realName() const{
+	return (this->_realName);
+}
 
 
 

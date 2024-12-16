@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 01:22:35 by tauer             #+#    #+#             */
-/*   Updated: 2024/12/13 13:12:42 by lleciak          ###   ########.fr       */
+/*   Updated: 2024/12/16 09:19:17 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ class Client
 {
   private:
 	std::string _nickName;
+	std::string _realName;
   
 	int 		_fd;
 	std::string _IPadd;
@@ -35,9 +36,11 @@ class Client
 	void 		setFd(const int fd);
 	void 		setIPadd(const std::string &IPadd);
 	void		setNickname(std::string name);
+	void		setRealName(std::string name);
 
 	//? getters
 	int 		Fd() const;
 	std::string IPadd() const;
 	std::string nickName() const;
+	std::string realName() const;
 };

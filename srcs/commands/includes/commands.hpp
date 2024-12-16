@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 11:11:32 by lleciak           #+#    #+#             */
-/*   Updated: 2024/12/13 14:39:22 by lleciak          ###   ########.fr       */
+/*   Updated: 2024/12/16 10:49:28 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 class Server;
 
 void	nick_cmd(Server &serv, int fd, const std::string &name);
-void	user_cmd(Server &serv, int fd, const std::string &cmd);
+void	user_cmd(Server &serv, int fd, const std::string &nick);//, std::string Ip, std::string realName);
 void	ping_cmd(Server &serv, int fd, const std::string &cmd);
 void	pong_cmd(Server &serv, int fd, const std::string &cmd);
 void	version_cmd(Server &serv, int fd, const std::string &cmd);
