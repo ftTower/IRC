@@ -20,20 +20,20 @@
 
 class Server;
 
-void	nick_cmd(Server &serv, int fd, const std::string &name);
-void	user_cmd(Server &serv, int fd, const std::string &nick);//, std::string Ip, std::string realName);
-void	ping_cmd(Server &serv, int fd, const std::string &cmd);
-void	pong_cmd(Server &serv, int fd, const std::string &cmd);
-void	version_cmd(Server &serv, int fd, const std::string &cmd);
-void	pass_cmd(Server &serv, int fd, const std::string &cmd);
-void	join_cmd(Server &serv, int fd, const std::string &cmd);
-void	part_cmd(Server &serv, int fd, const std::string &cmd);
-void	privmsg_cmd(Server &serv, int fd, const std::string &cmd);
-void	invite_cmd(Server &serv, int fd, const std::string &cmd);
-void	quit_cmd(Server &serv, int fd, const std::string &cmd);
-void	mode_cmd(Server &serv, int fd, const std::string &cmd);
-void	topic_cmd(Server &serv, int fd, const std::string &cmd);
-void	kick_cmd(Server &serv, int fd, const std::string &cmd);
+void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	user_cmd(Server &serv, int fd, std::vector<std::string> cmd);//, std::string Ip, std::string realName);
+void	ping_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd);
+void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 
 void	handleCmds(Server &serv, int fd, char buff[1024]);
 void	parseCmd(Server &serv, int fd, std::string cmd);

@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 
 #include "./includes/commands.hpp"
+#include <sstream>
 
 void	handleCmds(Server &serv, int fd, char buff[1024])
 {
 	std::string strBuff(buff);
-	std::cout << "BUFF === "<< buff<< std::endl;
 	if (strBuff.find("\r\n") == std::string::npos)
 		return ;
 	size_t pos = 0;
@@ -30,15 +30,29 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 
 	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET << "\n" << cmd << std::endl; 
+	// ici split
+	std::stringstream split(cmd);
+	std::string segment;
+	std::vector<std::string> commands;
+	while (std::getline(split, segment, ' ')){
+		commands.push_back(segment);
+	}
+	/////////
+	std::cout << "PRINT VECTOR"<< std::endl;
+	for (unsigned long int i = 0; i != commands.size(); i++){
+		std::cout << commands[i] << std::endl;
+	}
+	std::cout << "FIN PRINT VECTOR"<< std::endl;
+	/////////
 	
 	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
-	void (*foo[])(Server&,int,const std::string &) = {
+	void (*foo[])(Server&,int,std::vector<std::string>) = {
 		nick_cmd, user_cmd, pong_cmd, ping_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
 	};
 	for(size_t i = 0; i < 14; i++)
 		if (cmd.find(cmds[i]) != std::string::npos) {
 			try {
-				foo[i](serv,fd, cmd);}
+				foo[i](serv,fd, commands);}
 			catch (std::exception &e) {
 				std::cerr << RED_BG << "ERROR CMD [" + cmd + "]" << RESET << " : " << e.what() << std::endl;
 			}

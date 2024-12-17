@@ -17,22 +17,22 @@
 
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
-void	nick_cmd(Server &serv, int fd, const std::string &name)
+void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
+	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
-	if (serv.isNickUsed(name))
+	if (serv.isNickUsed(nickname))
 	{
 		std::cout << "Nickname unavailable." << std::endl;
 		return;
 	}
-	client.setNickname(name);
+	client.setNickname(nickname);
 	/////
 
-	std::string nickname = name.substr(name.find("NICK") + 5); 
 	std::string welcome = ":server 001 " + nickname + " :Welcome to the IRC server\r\n";
 	
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0)
-		throw(std::runtime_error(std::string("failed to send : ") + name));
+		throw(std::runtime_error(std::string("failed to send : ") + nickname));
 	
 	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  nickname << RESET << GREEN_BG << " Named !" << RESET << std::endl;
 }
@@ -41,7 +41,7 @@ void	nick_cmd(Server &serv, int fd, const std::string &name)
 // l'username et le realname d'un nouvel utilisateur.
 
 // Parameters: <nickname> <IP Address> <realname>
-void	user_cmd(Server &serv, int fd,const std::string &cmd)//, std::string Ip, std::string realName)
+void	user_cmd(Server &serv, int fd,std::vector<std::string> cmd)//, std::string Ip, std::string realName)
 {
 	(void)fd;
 	(void)serv;
@@ -62,7 +62,7 @@ void	user_cmd(Server &serv, int fd,const std::string &cmd)//, std::string Ip, st
 	// // client.setRealName();
 }
 
-void	ping_cmd(Server &serv, int fd, const std::string &cmd)
+void	ping_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -74,7 +74,7 @@ void	ping_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <token>
 }
 
-void	pong_cmd(Server &serv, int fd, const std::string &cmd)
+void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	
 	// Utilise comme une reponse a PING par le client ou le serveur
@@ -84,12 +84,12 @@ void	pong_cmd(Server &serv, int fd, const std::string &cmd)
 
 	const char *Pong = "PONG localhost\n";
 	if (send(fd, Pong, strlen(Pong), 0) < 0)
-		throw(std::runtime_error(std::string("failed to send : ") + cmd));
+		throw(std::runtime_error(std::string("failed to send : ") + cmd[0]));
 		
 	std::cout << "\t\t\t\t\t\t" << YELLOW_BG << BOLD_YELLOW "PONGED CLIENT " << fd << RESET << std::endl;
 }
 
-void	version_cmd(Server &serv, int fd, const std::string &cmd)
+void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -101,7 +101,7 @@ void	version_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: [<target>]
 }
 
-void	pass_cmd(Server &serv, int fd, const std::string &cmd)
+void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -112,7 +112,7 @@ void	pass_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <password>
 }
 
-void	join_cmd(Server &serv, int fd, const std::string &cmd)
+void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -125,7 +125,7 @@ void	join_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <channel>{,<channel>} [<key>{,<key>}]
 }
 
-void	part_cmd(Server &serv, int fd, const std::string &cmd)
+void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -138,7 +138,7 @@ void	part_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <channel>{,<channel>} [<reason>]
 }
 
-void	privmsg_cmd(Server &serv, int fd, const std::string &cmd)
+void	privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -149,7 +149,7 @@ void	privmsg_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <target>{,<target>} <text to be sent>
 }
 
-void	invite_cmd(Server &serv, int fd, const std::string &cmd)
+void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -160,7 +160,7 @@ void	invite_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <nickname> <channel>
 }
 
-void	quit_cmd(Server &serv, int fd, const std::string &cmd)
+void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -172,7 +172,7 @@ void	quit_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: [<reason>]
 }
 
-void	mode_cmd(Server &serv, int fd, const std::string &cmd)
+void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -184,7 +184,7 @@ void	mode_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <target> [<modestring> [<mode arguments>...]]
 }
 
-void	topic_cmd(Server &serv, int fd, const std::string &cmd)
+void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
@@ -195,7 +195,7 @@ void	topic_cmd(Server &serv, int fd, const std::string &cmd)
 	// Parameters: <channel> [<topic>]
 }
 
-void	kick_cmd(Server &serv, int fd, const std::string &cmd)
+void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	(void)fd;
 	(void)cmd;
