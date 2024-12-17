@@ -15,9 +15,9 @@
 #include "../../utils/includes/colors.hpp"
 #include "../../utils/includes/errMsg.hpp"
 
-#include "../../client/includes/client.hpp"
-#include "../../channel/includes/channel.hpp"
-#include "../../commands/includes/commands.hpp"
+#include "../../client/includes/Client.hpp"
+#include "../../channel/includes/Channel.hpp"
+#include "../../commands/includes/Commands.hpp"
 
 
 #include <iostream>
@@ -91,6 +91,10 @@ class Server {
 		Client &findClientFd(int fd);
 		Client &findClientNick(std::string nick);
 		bool	isNickUsed(std::string name);
+		bool	channelExist(std::string name);
+		Channel	&getChan(std::string name);
+		void	addChannel(Channel chan);
+
 };
 
 void throwSocketOptionError(int socketOptionRet, std::string optionType);

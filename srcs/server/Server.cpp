@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/server.hpp"
+#include "includes/Server.hpp"
 #include <algorithm>
 
 bool Server::_Signal = false; // init static variable
@@ -211,3 +211,32 @@ bool	Server::isNickUsed(std::string name)
 	}
 	return false;
 };
+
+
+
+//////////////////////////////CHANNEL RELATED/////////////////////////////////
+
+//verifier si le channel exist
+bool	Server::channelExist(std::string name){
+	for(size_t i = 0; i < this->channels.size(); i++)
+	{
+		if (this->channels[i].getChanName() == name)
+			return true;
+	}
+	return false;
+}
+
+// get channel avec son nom
+Channel	&Server::getChan(std::string name){
+	for(size_t i = 0; i < this->channels.size(); i++)
+	{
+		if (this->channels[i].getChanName() == name)
+			return channels[i];
+	}
+	return channels[0];
+}
+
+// ajouter un channel au vector
+void	Server::addChannel(Channel chan){
+	this->channels.push_back(chan);
+}

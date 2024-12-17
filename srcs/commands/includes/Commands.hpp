@@ -16,7 +16,7 @@
 # include <iostream>
 
 # include "../../utils/includes/colors.hpp"
-# include "../../server/includes/server.hpp"
+# include "../../server/includes/Server.hpp"
 
 class Server;
 
@@ -37,6 +37,8 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 
 void	handleCmds(Server &serv, int fd, char buff[1024]);
 void	parseCmd(Server &serv, int fd, std::string cmd);
+
+std::vector<std::string> splitString(std::string str, char sep);
 
 class UserNotFoundException: public std::exception
 {

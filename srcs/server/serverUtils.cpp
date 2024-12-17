@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./includes/server.hpp"
+#include "./includes/Server.hpp"
 
 void	throwSocketOptionError(int socketOptionRet, std::string optionType)
 {

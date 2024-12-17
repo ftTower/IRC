@@ -43,4 +43,6 @@ class Client
 	std::string IPadd() const;
 	std::string nickName() const;
 	std::string realName() const;
+
+
 };

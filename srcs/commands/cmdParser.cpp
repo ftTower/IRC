@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./includes/commands.hpp"
+#include "./includes/Commands.hpp"
 #include <sstream>
 
 void	handleCmds(Server &serv, int fd, char buff[1024])
@@ -30,21 +30,14 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 
 	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " Data :" << RESET << "\n" << cmd << std::endl; 
-	// ici split
-	std::stringstream split(cmd);
-	std::string segment;
-	std::vector<std::string> commands;
-	while (std::getline(split, segment, ' ')){
-		commands.push_back(segment);
-	}
-	/////////
+	std::vector<std::string> commands = splitString(cmd, ' ');
 	std::cout << "PRINT VECTOR"<< std::endl;
 	for (unsigned long int i = 0; i != commands.size(); i++){
 		std::cout << commands[i] << std::endl;
 	}
 	std::cout << "FIN PRINT VECTOR"<< std::endl;
 	/////////
-	
+
 	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 	void (*foo[])(Server&,int,std::vector<std::string>) = {
 		nick_cmd, user_cmd, pong_cmd, ping_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd

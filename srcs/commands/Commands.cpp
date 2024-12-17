@@ -10,10 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./includes/commands.hpp"
+#include "./includes/Commands.hpp"
 #include "./includes/numericReplies.hpp"
-#include "../client/includes/client.hpp"
+#include "../client/includes/Client.hpp"
 #include <sstream>
+
+// Parameters: <arg>
+// void	cap_cmd(Server &serv, int fd, std::vector<std::string> cmd)
+// {
+
+// }
 
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
@@ -43,23 +49,14 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // Parameters: <nickname> <IP Address> <realname>
 void	user_cmd(Server &serv, int fd,std::vector<std::string> cmd)//, std::string Ip, std::string realName)
 {
-	(void)fd;
-	(void)serv;
-	(void)cmd;
-	// Client& client = serv.findClientFd(fd);
-	// std::vector<std::string> param;
-	// std::stringstream tmp(cmd);
-	// std::string input;
-	// while (getline(tmp, input, ' ')){
-	// 	param.push_back(input);
-	// }
-
-	// std::cout << param[0] + '\n' << param[1] + '\n' << param[2] + '\n' << param[3] + '\n' << std::endl;
-	// // if (serv.isNickUsed(cmd.substr())))
-	// // 	client.setNickname( + "_");
-	// // client.setNickname();
-	// // client.setIPadd();
-	// // client.setRealName();
+	Client& client = serv.findClientFd(fd);
+	std::cout << cmd[0] + '\n' << cmd[1] + '\n' << cmd[2] + '\n' << cmd[3] + '\n' << std::endl;
+	if (serv.isNickUsed(cmd[1]))
+		client.setNickname(cmd[1] + "_");
+	else
+		client.setNickname(cmd[1]);
+	client.setIPadd(cmd[2]);
+	client.setRealName(cmd[3]);
 }
 
 void	ping_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -101,28 +98,32 @@ void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Parameters: [<target>]
 }
 
+// Permet de set un mot de passe de connexion
+// Parameters: <password>
 void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
+	(void) serv;
+	(void) fd;
+	(void) cmd;
+	// Client& client = serv.findClientFd(fd);
 
-	// Permet de set un mot de passe de connexion
-
-	// Parameters: <password>
+	// if (cmd[1].empty()){
+	// 	ERR_NEEDMOREPARAMS
+	// }
+	// else if ()
 }
 
+// Parameters: <channel> <password>
 void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
+	Channel& chan = serv.getChan(cmd[1]);
+	// est-ce que le channel existe ?
+	if (serv.channelExist(cmd[1])){
+		serv.addChannel(chan);
+		return;
+	}
 
-	// Indique que le client veut rejoindre le channel donne.
-	// Le serveur qui recupere la commande verifie si le client 
-	// peut ou non rejoindre le channel.
 
-	// Parameters: <channel>{,<channel>} [<key>{,<key>}]
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -209,4 +210,17 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 	// Server::ClearClients(fd);
 	// close(fd);
+}
+
+/////// utils
+
+std::vector<std::string> splitString(std::string str, char sep){
+
+	std::stringstream split(str);
+	std::string segment;
+	std::vector<std::string> commands;
+	while (std::getline(split, segment, sep)){
+		commands.push_back(segment);
+	}
+	return (commands);
 }

@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/client.hpp"
+#include "includes/Client.hpp"
+#include "../../server/includes/Server.hpp"
 
 //!Base
 
@@ -55,6 +56,4 @@ std::string Client::nickName() const {
 std::string Client::realName() const{
 	return (this->_realName);
 }
-
-
 
