@@ -16,11 +16,12 @@ class Channel {
 		std::string _name;
 		std::vector <Client> users; // Clients connected to channel
 		
-		std::vector <bool> modes;
+		bool modes[4];
 		
 	public :
 		Channel(std::string &Name);
 		std::string	getChanName(void);
+		void addClient(Client &newClient);
 		//~Channel();
 	
 	

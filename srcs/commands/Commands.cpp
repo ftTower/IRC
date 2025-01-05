@@ -120,12 +120,11 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	Channel& chan = serv.getChan(cmd[1]);
 	// est-ce que le channel existe ?
 	if (serv.channelExist(cmd[1])){
+		chan.addClient(serv.findClientFd(fd));
 		serv.addChannel(chan);
 		return;
 	}
-	(void)fd;
-
-
+	
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)

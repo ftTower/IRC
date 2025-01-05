@@ -183,11 +183,10 @@ Client &Server::findClientFd(int fd)
 {
 	for(size_t i = 0; i < clients.size(); i++)
 	{
-		Client *tmp = &clients[i];
 		if (clients[i].Fd() == fd)
-			return *tmp;
+			return clients[i];
 	}
-	return (clients[0]);
+	throw std::runtime_error("Client not found");
 }
 
 // trouver un client dans le vector des clients via son nick
@@ -195,13 +194,11 @@ Client &Server::findClientNick(std::string nick)
 {
 	for(size_t i = 0; i < clients.size(); i++)
 	{
-		Client *tmp = &clients[i];
 		if (clients[i].nickName() == nick)
-			return *tmp;
+			return clients[i];
 	}
-	return (clients[0]);
+	throw std::runtime_error("Client not found");
 }
-
 bool	Server::isNickUsed(std::string name)
 {
 	for(size_t i = 0; i < this->clients.size(); i++)

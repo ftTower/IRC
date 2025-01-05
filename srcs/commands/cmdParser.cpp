@@ -29,13 +29,13 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 
-	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << RESET << YELLOW_BG  << " Data :" << RESET << "\n" << cmd << std::endl; 
+	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << RESET << YELLOW_BG  << " Data :" << RESET << std::endl; 
 	std::vector<std::string> commands = splitString(cmd, ' ');
 	for (unsigned long int i = 0; i != commands.size(); i++){
 		std::cout << commands[i] << std::endl;
 	}
 
-	if (cmd == "CAP" || "LS")
+	if (cmd == "CAP" || cmd == "LS" || cmd == "CAP LS")
 		return ;
 	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 	void (*foo[])(Server&,int,std::vector<std::string>) = {
