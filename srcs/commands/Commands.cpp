@@ -124,6 +124,9 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addChannel(chan);
 		return;
 	}
+	else {
+		// ajouter client au channel existant
+	}
 	
 }
 
