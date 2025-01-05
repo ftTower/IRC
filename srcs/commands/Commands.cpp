@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "./includes/Commands.hpp"
+#include "../channel/includes/Channel.hpp"
 #include "./includes/numericReplies.hpp"
 #include "../client/includes/Client.hpp"
 #include <sstream>
@@ -122,6 +123,7 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addChannel(chan);
 		return;
 	}
+	(void)fd;
 
 
 }

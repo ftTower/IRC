@@ -18,16 +18,18 @@ LDFLAGS =
 # Paths
 SERVER = srcs/server/
 CLIENT = srcs/client/
+CHANNEL = srcs/channel/
 CMD = srcs/commands/
 
 BUILD_DIR = build/
 
 SRCS = 	srcs/main.cpp \
-		$(SERVER)server.cpp \
+		$(SERVER)Server.cpp \
 		$(SERVER)serverUtils.cpp \
-		$(CLIENT)client.cpp \
+		$(CLIENT)Client.cpp \
+		$(CHANNEL)Channel.cpp \
 		$(CMD)cmdParser.cpp \
-		$(CMD)commands.cpp
+		$(CMD)Commands.cpp
 
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)%.o)
 INCLUDES = -I./includes

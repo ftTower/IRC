@@ -9,9 +9,10 @@ Channel::Channel(std::string &Name): _name(Name) {
 
 
 
-Channel::~Channel() {
+//Channel::~Channel() {
 	
-}
+//}
+
 //// getter
 
 std::string	Channel::getChanName(void){
