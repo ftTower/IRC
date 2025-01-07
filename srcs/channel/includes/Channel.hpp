@@ -23,6 +23,4 @@ class Channel {
 		std::string	getChanName(void);
 		void addClient(Client &newClient);
 		//~Channel();
-	
-	
 };

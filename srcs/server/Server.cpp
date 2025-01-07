@@ -15,8 +15,7 @@
 
 bool Server::_Signal = false; // init static variable
 
-Server::Server(int Port) : _Port(Port), _SocketFd(-1)
-{
+Server::Server(int Port) : _Port(Port), _SocketFd(-1), clients(),channels(){
 }
 
 //! methods
@@ -141,6 +140,10 @@ int Server::SocketFd() const
 	return (_SocketFd);
 }
 
+std::vector<Channel> Server::getChannelList() {
+	return (this->channels);
+}
+
 //! signal
 
 void Server::SignalHandler(int signum)
@@ -203,6 +206,7 @@ bool	Server::isNickUsed(std::string name)
 {
 	for(size_t i = 0; i < this->clients.size(); i++)
 	{
+		std::cout << this->clients[i].nickName() << " " << name << "\n";  
 		if (this->clients[i].nickName() == name)
 			return true;
 	}
@@ -218,7 +222,10 @@ bool	Server::channelExist(std::string name){
 	for(size_t i = 0; i < this->channels.size(); i++)
 	{
 		if (this->channels[i].getChanName() == name)
+		{
 			return true;
+		}
+			
 	}
 	return false;
 }
@@ -230,10 +237,19 @@ Channel	&Server::getChan(std::string name){
 		if (this->channels[i].getChanName() == name)
 			return channels[i];
 	}
-	return channels[0];
+	throw (std::runtime_error("Channel not found"));
 }
 
 // ajouter un channel au vector
 void	Server::addChannel(Channel chan){
 	this->channels.push_back(chan);
+}
+
+void	Server::addClientToChannel(int fd, std::string channel){
+	try{
+		this->getChan(channel).addClient(this->findClientFd(fd));
+	}
+	catch(std::exception &e){
+		std::cerr << "Channel error, (addClientToChannel) : " << e.what() << std::endl;
+	}
 }

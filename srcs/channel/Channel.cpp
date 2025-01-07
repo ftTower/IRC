@@ -9,6 +9,10 @@ Channel::Channel(std::string &Name): _name(Name), users() {
 }
 
 void Channel::addClient(Client &newClient) {
+    for (size_t i = 0;i < users.size(); i++){
+        if (users[i].Fd() == newClient.Fd())
+            throw (std::runtime_error("User already connected."));
+    }
     users.push_back(newClient);
 }
 

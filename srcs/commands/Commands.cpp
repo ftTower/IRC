@@ -28,13 +28,13 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
-	if (serv.isNickUsed(nickname))
-	{
-		std::cout << "Nickname unavailable." << std::endl;
-		return;
+
+	if (serv.isNickUsed(nickname)) {
+		client.setNickname(nickname + "_");
+		// throw(std::runtime_error("Nickname unavailable."));
 	}
-	client.setNickname(nickname);
-	/////
+	else
+		client.setNickname(nickname);
 
 	std::string welcome = ":server 001 " + nickname + " :Welcome to the IRC server\r\n";
 	
@@ -117,17 +117,19 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // Parameters: <channel> <password>
 void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	Channel& chan = serv.getChan(cmd[1]);
+	(void)fd;
+	// Channel& chan = serv.getChan(cmd[1]);
 	// est-ce que le channel existe ?
-	if (serv.channelExist(cmd[1])){
-		chan.addClient(serv.findClientFd(fd));
-		serv.addChannel(chan);
-		return;
+	if (!serv.channelExist(cmd[1])){
+		serv.addChannel(Channel(cmd[1]));
 	}
-	else {
-		// ajouter client au channel existant
-	}
-	
+	serv.addClientToChannel(fd, cmd[1]);
+
+	std::vector<Channel> list = serv.getChannelList();
+	std::cout << RED_BG;
+	for (size_t i = 0; i < list.size(); i++)
+		std::cout << list[i].getChanName() << " ";
+	std::cout << RESET << std::endl;
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -212,11 +214,10 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Parameters: <channel> <user> *("," <user>) [<comment>]
 
 	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
-	// Server::ClearClients(fd);
+	// serv.ClearClients(fd);
 	// close(fd);
 }
 
-/////// utils
 
 std::vector<std::string> splitString(std::string str, char sep){
 

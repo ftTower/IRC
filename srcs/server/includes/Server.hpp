@@ -70,12 +70,14 @@ class Server {
 		void	AcceptNewClient();
 		void	kickClient(int fd);
 		void	PongClient(int fd);
+		void	addClientToChannel(int fd, std::string channel);
 
 		
 		//! getters
 		int	Port() const;
 		int SocketFd() const;
-		
+		std::vector<Channel> getChannelList();
+
 		//!signal
 		static void SignalHandler(int signum);
 
@@ -84,10 +86,10 @@ class Server {
 		void	ClearClients(int fd);
 
 
-		//utils
+		//! utils
 		std::string remove(const std::string &Data, char c);
 		
-		// Commands utils
+		//! Commands utils
 		Client &findClientFd(int fd);
 		Client &findClientNick(std::string nick);
 		bool	isNickUsed(std::string name);
