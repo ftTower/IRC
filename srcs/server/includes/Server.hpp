@@ -92,7 +92,7 @@ class Server {
 		//! Commands utils
 		Client &findClientFd(int fd);
 		Client &findClientNick(std::string nick);
-		bool	isNickUsed(std::string name);
+		bool	isNickUsed(std::string name, int fd);
 		bool	channelExist(std::string name);
 		Channel	&getChan(std::string name);
 		void	addChannel(Channel chan);

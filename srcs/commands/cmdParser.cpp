@@ -29,7 +29,7 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 
-	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << RESET << YELLOW_BG  << " Data :" << RESET << std::endl; 
+	std::cout << YELLOW_BG << BOLD_YELLOW << "Client " << RESET << YELLOW_BG << BOLD_RED << fd << " " << serv.findClientFd(fd).nickName() << RESET << YELLOW_BG  << " Data :" << RESET << std::endl; 
 	std::vector<std::string> commands = splitString(cmd, ' ');
 	for (unsigned long int i = 0; i != commands.size(); i++){
 		std::cout << commands[i] << std::endl;

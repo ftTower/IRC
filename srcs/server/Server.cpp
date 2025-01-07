@@ -202,14 +202,11 @@ Client &Server::findClientNick(std::string nick)
 	}
 	throw std::runtime_error("Client not found");
 }
-bool	Server::isNickUsed(std::string name)
+bool	Server::isNickUsed(std::string name, int fd)
 {
-	for(size_t i = 0; i < this->clients.size(); i++)
-	{
-		std::cout << this->clients[i].nickName() << " " << name << "\n";  
-		if (this->clients[i].nickName() == name)
+	for(size_t i = 0; i < this->clients.size(); i++)  
+		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd) 
 			return true;
-	}
 	return false;
 };
 

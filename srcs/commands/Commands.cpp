@@ -22,6 +22,13 @@
 
 // }
 
+void handleClientName(Server &serv, Client &client ,std::string nickName) {
+	while(serv.isNickUsed(nickName, client.Fd()))
+		nickName += "_";
+	client.setNickname(nickName);
+}
+
+
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -29,13 +36,8 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
 
-	if (serv.isNickUsed(nickname)) {
-		client.setNickname(nickname + "_");
-		// throw(std::runtime_error("Nickname unavailable."));
-	}
-	else
-		client.setNickname(nickname);
-
+	handleClientName(serv, client, nickname);
+	
 	std::string welcome = ":server 001 " + nickname + " :Welcome to the IRC server\r\n";
 	
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0)
@@ -52,10 +54,9 @@ void	user_cmd(Server &serv, int fd,std::vector<std::string> cmd)//, std::string 
 {
 	Client& client = serv.findClientFd(fd);
 	std::cout << cmd[0] + '\n' << cmd[1] + '\n' << cmd[2] + '\n' << cmd[3] + '\n' << std::endl;
-	if (serv.isNickUsed(cmd[1]))
-		client.setNickname(cmd[1] + "_");
-	else
-		client.setNickname(cmd[1]);
+	
+	handleClientName(serv, client, cmd[1]);
+
 	client.setIPadd(cmd[2]);
 	client.setRealName(cmd[3]);
 }
