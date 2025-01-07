@@ -154,14 +154,22 @@ void	privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw std::runtime_error("Not enough parameters for PRIVMSG command");
 	}
 
-	std::string target = cmd[1];
+
+	//!!!!!!! ERROR ICI CA TARGET DANS SEND MSG
+	std::vector<std::string> target = splitString(cmd[1], '#');
+
 	std::string message;
 	for (size_t i = 2; i < cmd.size(); ++i) {
 		message += cmd[i] + " ";
 	}
+
+	for(size_t i = 0; i < target.size(); i++)
+		std::cout << GREEN_BG << target[i] << " " << RESET;
+	std::cout << "\n" << RED_BG << message << RESET << "\n";
+
 	// message.pop_back(); // Remove the trailing space
 
-	serv.sendMessage(serv.findClientNick(target), message);
+	serv.sendMessage(target, message);
 }
 
 void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)

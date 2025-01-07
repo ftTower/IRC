@@ -125,36 +125,33 @@ std::string Server::remove(const std::string &Data, char c)
 	return (ret);
 }
 
-void Server::sendMessage(Channel &Channel, const std::string &msg)
+void Server::sendMessage(std::vector<std::string> &target, const std::string &msg)
 {
-	std::vector<Client> Clients = Channel.getUsersList();
+	std::vector<Client> sendList;
+
+	for(size_t i = 0; i < target.size(); i++) {
+		std::cout << BLUE_BG << "Target : " << target[i] << RESET;
+		if (this->channelExist(target[i])) {
+			std::vector<Client> buf = this->getChan(target[i]).getUsersList();
+			sendList.insert(sendList.end(), buf.begin(), buf.end());
+		}
+		else
+			sendList.push_back(this->findClientNick(target[i]));
+	}
+
 	std::string tmp = msg + "\r\n";
 
-	for (size_t i = 0; i < Clients.size(); i++)
+	for (size_t i = 0; i < sendList.size(); i++)
 	{
-		ssize_t bytesSent = send(Clients[i].Fd(), tmp.c_str(), tmp.size(), 0);
+		ssize_t bytesSent = send(sendList[i].Fd(), tmp.c_str(), tmp.size(), 0);
 		if (bytesSent < 0)
 		{
 			std::cerr << RED_BG << "Failed to send message to client" << RESET << "\n";
-			kickClient(Clients[i].Fd());
+			kickClient(sendList[i].Fd());
 		}
 		else if (static_cast<size_t>(bytesSent) < tmp.size())
 			std::cerr << RED_BG << "Warning : " << tmp << RESET << "\n";
 	}
-}
-
-void Server::sendMessage(Client &client, const std::string &msg)
-{
-	std::string tmp = msg + "\r\n";
-
-	ssize_t bytesSent = send(client.Fd(), tmp.c_str(), tmp.size(), 0);
-	if (bytesSent < 0)
-	{
-		std::cerr << RED_BG << "Failed to send message to client" << RESET << "\n";
-		kickClient(client.Fd());
-	}
-	else if (static_cast<size_t>(bytesSent) < tmp.size())
-		std::cerr << RED_BG << "Warning : " << tmp << RESET << "\n";
 }
 
 void Server::ReceiveNewData(int fd)
@@ -245,12 +242,14 @@ Client &Server::findClientNick(std::string nick)
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}
-	throw std::runtime_error("Client not found");
+	throw std::runtime_error("Client named " + nick + " not found");
 }
 bool Server::isNickUsed(std::string name, int fd)
 {
+	if (this->channelExist(name))
+		return true;
 	for (size_t i = 0; i < this->clients.size(); i++)
-		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd)
+		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd)	
 			return true;
 	return false;
 };
