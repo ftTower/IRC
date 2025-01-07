@@ -66,6 +66,9 @@ class Server {
 		void	HandleNewData(int fd, std::string &Data);
 		void	HandleNick(int fd, const std::string &Data);
 		
+		void 	sendMessage(Channel &Channel, const std::string &msg);
+		void	sendMessage(Client &Client, const std::string &msg);
+
 		//! Client
 		void	AcceptNewClient();
 		void	kickClient(int fd);

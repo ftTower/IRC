@@ -126,11 +126,6 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	}
 	serv.addClientToChannel(fd, cmd[1]);
 
-	std::vector<Channel> list = serv.getChannelList();
-	std::cout << RED_BG;
-	for (size_t i = 0; i < list.size(); i++)
-		std::cout << list[i].getChanName() << " ";
-	std::cout << RESET << std::endl;
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -155,6 +150,18 @@ void	privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Pour envoyer des messages prives entre utilisateurs
 
 	// Parameters: <target>{,<target>} <text to be sent>
+	if (cmd.size() < 3) {
+		throw std::runtime_error("Not enough parameters for PRIVMSG command");
+	}
+
+	std::string target = cmd[1];
+	std::string message;
+	for (size_t i = 2; i < cmd.size(); ++i) {
+		message += cmd[i] + " ";
+	}
+	// message.pop_back(); // Remove the trailing space
+
+	serv.sendMessage(serv.findClientNick(target), message);
 }
 
 void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)

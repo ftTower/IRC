@@ -15,16 +15,17 @@
 
 bool Server::_Signal = false; // init static variable
 
-Server::Server(int Port) : _Port(Port), _SocketFd(-1), clients(),channels(){
+Server::Server(int Port) : _Port(Port), _SocketFd(-1), clients(), channels()
+{
 }
 
 //! methods
 
 void Server::Init()
 {
-	struct sockaddr_in	add;
-	struct pollfd		NewPoll;
-	int					en;
+	struct sockaddr_in add;
+	struct pollfd NewPoll;
+	int en;
 
 	add.sin_family = AF_INET;
 	add.sin_port = htons(this->Port());
@@ -50,8 +51,11 @@ void Server::Init()
 void Server::Run()
 {
 	Init();
-	std::cout << GREEN_BG << BOLD_WHITE << " SERVER ON " << RESET << std::endl << BOLD_MAGENTA << "\tPort : " << RESET << LIGHT_YELLOW << this->Port() << RESET << std::endl << BOLD_MAGENTA << "\tSocket Fd : " << RESET << LIGHT_YELLOW << this->SocketFd() << RESET << std::endl << std::endl;
-	
+	std::cout << GREEN_BG << BOLD_WHITE << " SERVER ON " << RESET << std::endl
+			  << BOLD_MAGENTA << "\tPort : " << RESET << LIGHT_YELLOW << this->Port() << RESET << std::endl
+			  << BOLD_MAGENTA << "\tSocket Fd : " << RESET << LIGHT_YELLOW << this->SocketFd() << RESET << std::endl
+			  << std::endl;
+
 	while (!Server::_Signal)
 	{
 		if ((poll(&fds[0], fds.size(), -1) == -1) && Server::_Signal == false)
@@ -77,40 +81,80 @@ void Server::AcceptNewClient()
 	struct sockaddr_in CliAdd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(CliAdd);
-	
+
 	int incomingFd = accept(SocketFd(), (sockaddr *)&(CliAdd), &len);
 	if (incomingFd == -1)
-		{std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to accept" << RESET << std::endl; return;}
+	{
+		std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to accept" << RESET << std::endl;
+		return;
+	}
 	if (fcntl(incomingFd, F_SETFL, O_NONBLOCK) == -1)
-		{std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to fcntl" << RESET << std::endl; return;}
-	
+	{
+		std::cout << "\t\t" << RED_BG << BOLD_RED << "failed to fcntl" << RESET << std::endl;
+		return;
+	}
+
 	NewPoll.fd = incomingFd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
 
 	C.setFd(incomingFd);
 	C.setIPadd(inet_ntoa((CliAdd.sin_addr)));
-	
+
 	clients.push_back(C);
 	fds.push_back(NewPoll);
 
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
-	
+	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client " << RESET << GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
 }
 
-void	Server::kickClient(int fd) {
+void Server::kickClient(int fd)
+{
 	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
-		ClearClients(fd);
-		close(fd);
+	ClearClients(fd);
+	close(fd);
 }
 
-std::string Server::remove(const std::string &Data, char c) {
+std::string Server::remove(const std::string &Data, char c)
+{
 	std::string ret = "";
-	for (size_t i = 0; i < Data.size(); i++) {
+	for (size_t i = 0; i < Data.size(); i++)
+	{
 		if (Data[i] != c)
 			ret += Data[i];
 	}
 	return (ret);
+}
+
+void Server::sendMessage(Channel &Channel, const std::string &msg)
+{
+	std::vector<Client> Clients = Channel.getUsersList();
+	std::string tmp = msg + "\r\n";
+
+	for (size_t i = 0; i < Clients.size(); i++)
+	{
+		ssize_t bytesSent = send(Clients[i].Fd(), tmp.c_str(), tmp.size(), 0);
+		if (bytesSent < 0)
+		{
+			std::cerr << RED_BG << "Failed to send message to client" << RESET << "\n";
+			kickClient(Clients[i].Fd());
+		}
+		else if (static_cast<size_t>(bytesSent) < tmp.size())
+			std::cerr << RED_BG << "Warning : " << tmp << RESET << "\n";
+	}
+}
+
+void Server::sendMessage(Client &client, const std::string &msg)
+{
+	std::string tmp = msg + "\r\n";
+
+	ssize_t bytesSent = send(client.Fd(), tmp.c_str(), tmp.size(), 0);
+	if (bytesSent < 0)
+	{
+		std::cerr << RED_BG << "Failed to send message to client" << RESET << "\n";
+		kickClient(client.Fd());
+	}
+	else if (static_cast<size_t>(bytesSent) < tmp.size())
+		std::cerr << RED_BG << "Warning : " << tmp << RESET << "\n";
 }
 
 void Server::ReceiveNewData(int fd)
@@ -119,10 +163,11 @@ void Server::ReceiveNewData(int fd)
 	memset(buff, 0, sizeof(buff));
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
-	
+
 	if (bytes <= 0)
 		kickClient(fd);
-	else {
+	else
+	{
 		buff[bytes] = '\0';
 		handleCmds(*this, fd, buff);
 	}
@@ -140,7 +185,8 @@ int Server::SocketFd() const
 	return (_SocketFd);
 }
 
-std::vector<Channel> Server::getChannelList() {
+std::vector<Channel> Server::getChannelList()
+{
 	return (this->channels);
 }
 
@@ -149,7 +195,7 @@ std::vector<Channel> Server::getChannelList() {
 void Server::SignalHandler(int signum)
 {
 	(void)signum;
-	std::cout << "\033[2K"; 
+	std::cout << "\033[2K";
 	Server::_Signal = true;
 }
 
@@ -159,7 +205,7 @@ void Server::CloseFds()
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
-			std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << clients[i].Fd() << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+		std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << clients[i].Fd() << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 		if (clients[i].Fd() >= 0)
 			close(clients[i].Fd());
 	}
@@ -174,17 +220,16 @@ void Server::ClearClients(int fd)
 		if (clients[i].Fd() == fd)
 		{
 			clients.erase(clients.begin() + i);
-			break ;
+			break;
 		}
 }
-
 
 ///// test commands
 
 // trouver un client dans le vector des clients via son fd
 Client &Server::findClientFd(int fd)
 {
-	for(size_t i = 0; i < clients.size(); i++)
+	for (size_t i = 0; i < clients.size(); i++)
 	{
 		if (clients[i].Fd() == fd)
 			return clients[i];
@@ -195,58 +240,61 @@ Client &Server::findClientFd(int fd)
 // trouver un client dans le vector des clients via son nick
 Client &Server::findClientNick(std::string nick)
 {
-	for(size_t i = 0; i < clients.size(); i++)
+	for (size_t i = 0; i < clients.size(); i++)
 	{
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}
 	throw std::runtime_error("Client not found");
 }
-bool	Server::isNickUsed(std::string name, int fd)
+bool Server::isNickUsed(std::string name, int fd)
 {
-	for(size_t i = 0; i < this->clients.size(); i++)  
-		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd) 
+	for (size_t i = 0; i < this->clients.size(); i++)
+		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd)
 			return true;
 	return false;
 };
 
-
-
 //////////////////////////////CHANNEL RELATED/////////////////////////////////
 
-//verifier si le channel exist
-bool	Server::channelExist(std::string name){
-	for(size_t i = 0; i < this->channels.size(); i++)
+// verifier si le channel exist
+bool Server::channelExist(std::string name)
+{
+	for (size_t i = 0; i < this->channels.size(); i++)
 	{
 		if (this->channels[i].getChanName() == name)
 		{
 			return true;
 		}
-			
 	}
 	return false;
 }
 
 // get channel avec son nom
-Channel	&Server::getChan(std::string name){
-	for(size_t i = 0; i < this->channels.size(); i++)
+Channel &Server::getChan(std::string name)
+{
+	for (size_t i = 0; i < this->channels.size(); i++)
 	{
 		if (this->channels[i].getChanName() == name)
 			return channels[i];
 	}
-	throw (std::runtime_error("Channel not found"));
+	throw(std::runtime_error("Channel not found"));
 }
 
 // ajouter un channel au vector
-void	Server::addChannel(Channel chan){
+void Server::addChannel(Channel chan)
+{
 	this->channels.push_back(chan);
 }
 
-void	Server::addClientToChannel(int fd, std::string channel){
-	try{
+void Server::addClientToChannel(int fd, std::string channel)
+{
+	try
+	{
 		this->getChan(channel).addClient(this->findClientFd(fd));
 	}
-	catch(std::exception &e){
+	catch (std::exception &e)
+	{
 		std::cerr << "Channel error, (addClientToChannel) : " << e.what() << std::endl;
 	}
 }

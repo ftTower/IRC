@@ -20,7 +20,10 @@ class Channel {
 		
 	public :
 		Channel(std::string &Name);
+
 		std::string	getChanName(void);
+		std::vector <Client> getUsersList();
+		
 		void addClient(Client &newClient);
 		//~Channel();
 };

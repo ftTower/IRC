@@ -23,6 +23,11 @@ void Channel::addClient(Client &newClient) {
 
 //// getter
 
+std::vector <Client> Channel::getUsersList() {
+    return (this->users);
+}
+
+
 std::string	Channel::getChanName(void){
     return(this->_name);
 }
