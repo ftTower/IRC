@@ -23,13 +23,14 @@ class Client
 	std::string _realName;
   
 	int 		_fd;
+	int			_serverSock;
 	std::string _IPadd;
 	
 	//std::vector<std::string> channelsList;
 
   public:
 	//!Base
-	Client();
+	Client(int serverSock);
 	~Client();
 
 	//? setters
@@ -40,9 +41,13 @@ class Client
 
 	//? getters
 	int 		Fd() const;
+	int			ServerSock() const;
 	std::string IPadd() const;
 	std::string nickName() const;
 	std::string realName() const;
 
+
+	// listen
+	void	ReceiveMessage();
 
 };

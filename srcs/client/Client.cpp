@@ -15,7 +15,7 @@
 
 //!Base
 
-Client::Client() : _nickName("default") , _fd(-1) {
+Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock) {
 }
 
 Client::~Client() {}
@@ -41,6 +41,10 @@ void		Client::setRealName(std::string name){
 
 //? getters
 
+int		Client::ServerSock() const {
+	return (this->_serverSock);
+}
+
 int		Client::Fd() const {
 	return (this->_fd);
 }
@@ -57,3 +61,18 @@ std::string Client::realName() const{
 	return (this->_realName);
 }
 
+// listen
+
+void	Client::ReceiveMessage()  {
+    char buffer[1024];
+    int bytesReceived = recv(_serverSock, buffer, sizeof(buffer) - 1, 0);
+
+    if (bytesReceived > 0) {
+        buffer[bytesReceived] = '\0';
+        std::cout << "Message reçu : " << buffer << std::endl;
+    } else if (bytesReceived == 0) {
+        std::cout << "Le serveur a fermé la connexion." << std::endl;
+    } else {
+        std::cerr << "Erreur lors de la réception du message !" << std::endl;
+    }
+}

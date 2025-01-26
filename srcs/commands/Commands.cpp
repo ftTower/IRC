@@ -141,35 +141,35 @@ void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Parameters: <channel>{,<channel>} [<reason>]
 }
 
-void	privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd)
-{
-	(void)fd;
-	(void)cmd;
-	(void)serv;
+void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
+    if (cmd.size() < 3) {
+        throw std::runtime_error("Not enough parameters for PRIVMSG command");
+    }
 
-	// Pour envoyer des messages prives entre utilisateurs
+    Client &sender = serv.findClientFd(fd); 
 
-	// Parameters: <target>{,<target>} <text to be sent>
-	if (cmd.size() < 3) {
-		throw std::runtime_error("Not enough parameters for PRIVMSG command");
-	}
+    std::vector<std::string> targets = splitString(cmd[1], ',');
+    for (size_t i = 0; i < targets.size(); ++i) {
+        if (targets[i].empty()) {
+            std::cerr << "Cible invalide détectée." << std::endl;
+            return;
+        }
+    }
 
+    std::string message;
+    for (size_t i = 2; i < cmd.size(); ++i) {
+        message += cmd[i] + " ";
+    }
 
-	//!!!!!!! ERROR ICI CA TARGET DANS SEND MSG
-	std::vector<std::string> target = splitString(cmd[1], '#');
+    if (!message.empty() && message[message.size() - 1] == ' ') {
+        message.erase(message.end() - 1);
+    }
 
-	std::string message;
-	for (size_t i = 2; i < cmd.size(); ++i) {
-		message += cmd[i] + " ";
-	}
+    for (size_t i = 0; i < targets.size(); i++)
+        std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
+    std::cout << "\n" << RED_BG << "Message: " << message << RESET << "\n";
 
-	for(size_t i = 0; i < target.size(); i++)
-		std::cout << GREEN_BG << target[i] << " " << RESET;
-	std::cout << "\n" << RED_BG << message << RESET << "\n";
-
-	// message.pop_back(); // Remove the trailing space
-
-	serv.sendMessage(target, message);
+    serv.sendMessage(targets, message, sender);
 }
 
 void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)

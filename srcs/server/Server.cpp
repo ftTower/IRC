@@ -76,7 +76,7 @@ void Server::Run()
 
 void Server::AcceptNewClient()
 {
-	Client C;
+	Client C(_SocketFd);
 
 	struct sockaddr_in CliAdd;
 	struct pollfd NewPoll;
@@ -125,33 +125,31 @@ std::string Server::remove(const std::string &Data, char c)
 	return (ret);
 }
 
-void Server::sendMessage(std::vector<std::string> &target, const std::string &msg)
-{
-	std::vector<Client> sendList;
+void Server::sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender) {
+    std::vector<Client> sendList;
 
-	for(size_t i = 0; i < target.size(); i++) {
-		std::cout << BLUE_BG << "Target : " << target[i] << RESET;
-		if (this->channelExist(target[i])) {
-			std::vector<Client> buf = this->getChan(target[i]).getUsersList();
-			sendList.insert(sendList.end(), buf.begin(), buf.end());
-		}
-		else
-			sendList.push_back(this->findClientNick(target[i]));
-	}
+    for (size_t i = 0; i < target.size(); i++) {
+        if (!this->channels.empty() && this->channelExist(target[i])) {
+            std::vector<Client> buf = this->getChan(target[i]).getUsersList();
+            sendList.insert(sendList.end(), buf.begin(), buf.end());
+        } else {
+            target[i] = target[i].substr(1); // Retirer le '#' pour les canaux privés
+            sendList.push_back(this->findClientNick(target[i]));
+        }
+    }
 
-	std::string tmp = msg + "\r\n";
+    // Construire le message formaté
+    std::string formattedMsg = ":" + sender.nickName() + "!" + sender.nickName() + "@localhost PRIVMSG ";
+    formattedMsg += target[0] + " :" + msg + "\r\n";
 
-	for (size_t i = 0; i < sendList.size(); i++)
-	{
-		ssize_t bytesSent = send(sendList[i].Fd(), tmp.c_str(), tmp.size(), 0);
-		if (bytesSent < 0)
-		{
-			std::cerr << RED_BG << "Failed to send message to client" << RESET << "\n";
-			kickClient(sendList[i].Fd());
-		}
-		else if (static_cast<size_t>(bytesSent) < tmp.size())
-			std::cerr << RED_BG << "Warning : " << tmp << RESET << "\n";
-	}
+    // Envoyer le message à tous les destinataires
+    for (size_t i = 0; i < sendList.size(); i++) {
+        ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
+        if (bytesSent < 0) {
+            std::cerr << "Failed to send message to client: " << sendList[i].Fd() << "\n";
+            kickClient(sendList[i].Fd());
+        }
+    }
 }
 
 void Server::ReceiveNewData(int fd)
@@ -242,7 +240,7 @@ Client &Server::findClientNick(std::string nick)
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}
-	throw std::runtime_error("Client named " + nick + " not found");
+	throw std::runtime_error(nick);
 }
 bool Server::isNickUsed(std::string name, int fd)
 {
