@@ -2,6 +2,7 @@
 
 #include "includes/Server.hpp"
 
+//accepter un client sur le serveur
 void Server::AcceptNewClient()
 {
 	Client C(_SocketFd);
@@ -32,47 +33,59 @@ void Server::AcceptNewClient()
 	clients.push_back(C);
 	fds.push_back(NewPoll);
 
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client " << RESET << GREEN_BG << BOLD_YELLOW << incomingFd << RESET << GREEN_BG << " Connected !" << RESET << std::endl;
+	connectedMessage(incomingFd);
 }
 
+// deconnecter un client
 void Server::kickClient(int fd)
 {
-	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+	disconnectedMessage(fd);
 	ClearClients(fd);
 	close(fd);
 }
 
-void Server::sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender) {
-    std::vector<Client> sendList;
-
-    for (size_t i = 0; i < target.size(); i++) {
-        if (!this->channels.empty() && this->channelExist(target[i])) {
-            std::vector<Client> buf = this->getChan(target[i]).getUsersList();
-            sendList.insert(sendList.end(), buf.begin(), buf.end());
-        } else {
-            try {
-				if (target[i][0] == '"')
-					target[i] = target[i].substr(1); // Retirer le '#' pour les canaux privés
-				sendList.push_back(this->findClientNick(target[i]));	
-			} catch (std::exception &e) {
-				std::cerr << "FAILED TO FIND CLIENT NAMED :" << e.what() << std::endl;
-			}
-        }
-    }
-
-    // Construire le message formaté
-    std::string formattedMsg = ":" + sender.nickName() + "!" + sender.nickName() + "@localhost PRIVMSG ";
-	formattedMsg += target[0] + " :" + msg + "\r\n";
-
-    // Envoyer le message à tous les destinataires
-    for (size_t i = 0; i < sendList.size(); i++) {
-		if (sendList[i] != sender) {
-			ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
-			if (bytesSent < 0) {
-				std::cerr << "Failed to send message to client: " << sendList[i].Fd() << "\n";
-				kickClient(sendList[i].Fd());
-			}
+// deconnecter tout les clients
+void Server::ClearClients(int fd)
+{
+	for (size_t i = 0; i < fds.size(); i++)
+		if (fds[i].fd == fd)
+			fds.erase(fds.begin() + i);
+	for (size_t i = 0; i < clients.size(); i++)
+		if (clients[i].Fd() == fd)
+		{
+			clients.erase(clients.begin() + i);
+			break;
 		}
-    }
 }
+
+// trouver un client dans le vector des clients via son fd
+Client &Server::findClientFd(int fd)
+{
+	for (size_t i = 0; i < clients.size(); i++)
+	{
+		if (clients[i].Fd() == fd)
+			return clients[i];
+	}
+	throw std::runtime_error("Client not found");
+}
+
+// trouver un client dans le vector des clients via son nick
+Client &Server::findClientNick(std::string nick)
+{
+	for (size_t i = 0; i < clients.size(); i++)
+	{
+		if (clients[i].nickName() == nick)
+			return clients[i];
+	}
+	throw std::runtime_error(nick);
+}
+bool Server::isNickUsed(std::string name, int fd)
+{
+	if (this->channelExist(name))
+		return true;
+	for (size_t i = 0; i < this->clients.size(); i++)
+		if (this->clients[i].nickName() == name && this->clients[i].Fd() != fd)	
+			return true;
+	return false;
+};
 

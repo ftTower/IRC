@@ -29,6 +29,6 @@ int	main(int argc, char **argv)
 		S.CloseFds();
 		std::cerr << RED_BG << BOLD_RED << "ERROR : " << e.what() << std::endl;
 	}
-	std::cout << std::endl << RED_BG << BOLD_RED << "SERVER DOWN" << RESET << std::endl;
+	std::cout << std::endl << RED_BG << BOLD_RED << "\t\t\t\tSERVER DOWN" << RESET << std::endl;
 	return (0);
 }

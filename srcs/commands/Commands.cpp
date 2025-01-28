@@ -42,7 +42,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0)
 		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
 	
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  client.nickName() << RESET << GREEN_BG << " Named !" << RESET << std::endl;
+	serv.nickMessage(fd, client);
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -84,7 +84,7 @@ void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	if (send(fd, Pong, strlen(Pong), 0) < 0)
 		throw(std::runtime_error(std::string("failed to send : ") + cmd[0]));
 		
-	std::cout << "\t\t\t\t\t\t" << YELLOW_BG << BOLD_YELLOW "PONGED CLIENT " << fd << RESET << std::endl;
+	serv.pongMessage(fd);
 }
 
 void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -235,7 +235,7 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 	// Parameters: <channel> <user> *("," <user>) [<comment>]
 
-	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
+	//std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 	// serv.ClearClients(fd);
 	// close(fd);
 }

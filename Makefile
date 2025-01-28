@@ -26,11 +26,15 @@ BUILD_DIR = build/
 SRCS = 	srcs/main.cpp \
 		$(SERVER)Server.cpp \
 		$(SERVER)serverToClients.cpp \
+		$(SERVER)serverToChannels.cpp \
+		$(SERVER)serverMessages.cpp \
+		$(SERVER)serverGetters.cpp \
 		$(SERVER)serverUtils.cpp \
 		$(CLIENT)Client.cpp \
 		$(CHANNEL)Channel.cpp \
 		$(CMD)cmdParser.cpp \
-		$(CMD)Commands.cpp
+		$(CMD)Commands.cpp \
+		$(CMD)commandsMessages.cpp
 
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)%.o)
 INCLUDES = -I./includes

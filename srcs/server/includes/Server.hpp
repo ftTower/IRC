@@ -57,9 +57,14 @@ class Server {
 		//! constructors
 		Server(int Port);
 
-
-		//? operators
-		
+		//! messages
+		void	initMessage();
+		void	connectedMessage(int incomingFd);
+		void	disconnectedMessage(int fd);
+		//? commands messages
+		void	nickMessage(int fd, const Client &client);
+		void	pongMessage(int fd);
+			
 		//! methods
 		void	Init();
 		void	Run();

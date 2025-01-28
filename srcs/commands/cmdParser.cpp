@@ -34,7 +34,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 	
 	//! afficher toute la cmd 
 	for (unsigned long int i = 0; i != commands.size(); i++){
-		std::cout << commands[i];
+		std::cout << commands[i] << " ";
 	}
 	//? afficher seulement cmd[0]
 	//if (!commands.empty())
