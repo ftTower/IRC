@@ -25,6 +25,7 @@ BUILD_DIR = build/
 
 SRCS = 	srcs/main.cpp \
 		$(SERVER)Server.cpp \
+		$(SERVER)serverToClients.cpp \
 		$(SERVER)serverUtils.cpp \
 		$(CLIENT)Client.cpp \
 		$(CHANNEL)Channel.cpp \

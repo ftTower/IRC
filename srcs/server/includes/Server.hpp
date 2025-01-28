@@ -57,6 +57,9 @@ class Server {
 		//! constructors
 		Server(int Port);
 
+
+		//? operators
+		
 		//! methods
 		void	Init();
 		void	Run();
@@ -99,6 +102,7 @@ class Server {
 		bool	channelExist(std::string name);
 		Channel	&getChan(std::string name);
 		void	addChannel(Channel chan);
+
 
 };
 

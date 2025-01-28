@@ -33,6 +33,9 @@ class Client
 	Client(int serverSock);
 	~Client();
 
+	bool operator!=(const Client &other) const;
+	
+
 	//? setters
 	void 		setFd(const int fd);
 	void 		setIPadd(const std::string &IPadd);

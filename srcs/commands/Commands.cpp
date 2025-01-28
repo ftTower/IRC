@@ -28,7 +28,6 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 	client.setNickname(nickName);
 }
 
-
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -38,12 +37,12 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 	handleClientName(serv, client, nickname);
 	
-	std::string welcome = ":server 001 " + nickname + " :Welcome to the IRC server\r\n";
+	std::string welcome = ":server 001 " + client.nickName() + " :Welcome to the IRC server\r\n";
 	
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0)
-		throw(std::runtime_error(std::string("failed to send : ") + nickname));
+		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
 	
-	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  nickname << RESET << GREEN_BG << " Named !" << RESET << std::endl;
+	std::cout << "\t\t\t\t\t\t" << GREEN_BG << BOLD_GREEN << "Client "  << RESET <<  GREEN_BG << BOLD_YELLOW << fd << " " <<  client.nickName() << RESET << GREEN_BG << " Named !" << RESET << std::endl;
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -125,6 +124,13 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addChannel(Channel(cmd[1]));
 	}
 	serv.addClientToChannel(fd, cmd[1]);
+	
+	Channel tmp = serv.getChan(cmd[1]);
+	std::cout << tmp.getChanName() << "\t";
+	for (size_t i = 0; i < tmp.getUsersList().size(); i++) {
+		std::cout << tmp.getUsersList()[i].nickName() << " ";
+	}
+	std::cout << std::endl;
 
 }
 

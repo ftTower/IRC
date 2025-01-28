@@ -20,6 +20,13 @@ Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(se
 
 Client::~Client() {}
 
+bool Client::operator!=(const Client &other) const {
+    if (this->Fd() != other.Fd())
+        return (true);
+    return (false);
+}
+
+
 //? setters
 
 void	Client::setFd(const int fd) {
@@ -65,7 +72,7 @@ std::string Client::realName() const{
 
 void	Client::ReceiveMessage()  {
     char buffer[1024];
-    int bytesReceived = recv(_serverSock, buffer, sizeof(buffer) - 1, 0);
+    int bytesReceived = recv(this->Fd(), buffer, sizeof(buffer) - 1, 0);
 
     if (bytesReceived > 0) {
         buffer[bytesReceived] = '\0';
