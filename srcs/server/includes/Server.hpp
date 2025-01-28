@@ -62,6 +62,7 @@ class Server {
 		void	connectedMessage(int incomingFd);
 		void	disconnectedMessage(int fd);
 		//? commands messages
+		void	cmdParseMessage(int fd, Server &serv, std::vector<std::string> commands);
 		void	nickMessage(int fd, const Client &client);
 		void	pongMessage(int fd);
 		//? routine messages
@@ -114,3 +115,5 @@ class Server {
 };
 
 void throwSocketOptionError(int socketOptionRet, std::string optionType);
+
+std::string getTimestamp();

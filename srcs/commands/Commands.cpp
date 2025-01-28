@@ -52,7 +52,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 void	user_cmd(Server &serv, int fd,std::vector<std::string> cmd)//, std::string Ip, std::string realName)
 {
 	Client& client = serv.findClientFd(fd);
-	std::cout << cmd[0] + '\n' << cmd[1] + '\n' << cmd[2] + '\n' << cmd[3] + '\n' << std::endl;
+	//std::cout << cmd[0] + '\n' << cmd[1] + '\n' << cmd[2] + '\n' << cmd[3] + '\n' << std::endl;
 	
 	handleClientName(serv, client, cmd[1]);
 

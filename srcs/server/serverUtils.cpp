@@ -103,3 +103,14 @@ void Server::CloseFds()
 			close(clients[i].Fd());
 	}
 }
+
+//! time
+#include <iostream>
+#include <ctime>
+
+std::string getTimestamp() {
+    std::time_t now = std::time(0);
+    char buffer[20];
+    std::strftime(buffer, sizeof(buffer), "[%H:%M:%S]", std::localtime(&now));
+    return std::string(buffer);
+}
