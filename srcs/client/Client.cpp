@@ -51,6 +51,10 @@ void		Client::setNbPingUp() {
         this->nbPing += 1;
 }
 
+void		Client::addCmdToHistoric(std::string &cmd) {
+    this->historic.push_back(cmd);
+}
+
 
 //? getters
 
@@ -82,6 +86,9 @@ std::time_t Client::getConnectTime() const {
     return (this->connect_time);
 }
 
+std::vector<std::string> Client::getHistoric() const {
+    return (this->historic);
+}
 
 // listen
 

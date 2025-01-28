@@ -1,5 +1,6 @@
 
 
+#include <iomanip>
 #include "includes/Server.hpp"
 
 void	Server::initMessage() {
@@ -60,14 +61,25 @@ std::string formatString(const std::string &string, size_t length) {
 	return (ret);
 }
 
+std::string formatHistoric(std::vector<std::string> historic, size_t length) {
+	std::string tmp;
+	
+	if (historic.empty())
+		return (formatString(" ", length));
+	for (size_t i = historic.size(); i > 0; i--) {
+		tmp += formatString(historic[i - 1], 4);
+		tmp += ","; 
+	}
+	return (formatString(tmp, length));
+}
 
 void	Server::usersMessage() {
     std::cout 	<< std::endl
 				<< WHITE_BG
 				<< getTimestamp()
 				<< RESET
-				<< CYAN_BG
-				<< "\tUSERS CONNECTED |   CONNECTION TIME   | PONG COUNTER | "  
+				<< YELLOW_BG
+				<< "\tUSERS CONNECTED |   CONNECTION TIME   | PONG COUNTER |   LAST COMMANDS     "  
 				<< RESET
 				<< std::endl;
 	for(size_t i = 0; i < clients.size() && i < 6; i++) {
@@ -80,14 +92,17 @@ void	Server::usersMessage() {
 		
 		
 		std::cout 	<< "\t\t"
-					//<< clients[clients.size() - 1 - i].Fd()
-					//<< " "
-					<< formatString(clients[clients.size() - 1 - i].nickName(), 15)
-					<< "   "
-					<< buffer
-					<< "   "
-					<< clients[clients.size() - 1 - i].getNbPing()
-					<< std::endl;
+							//<< clients[clients.size() - 1 - i].Fd()
+							//<< " "
+							<< formatString(clients[clients.size() - 1 - i].nickName(), 15)
+							<< " | "
+							<< buffer
+							<< " | "
+							<< std::setw(11) << clients[clients.size() - 1 - i].getNbPing()
+							<< "  | ["
+							<< formatHistoric(clients[clients.size() - 1 - i].getHistoric(), 18)
+							<< "]"
+							<< std::endl;
 	}
 	std::cout << std::endl;
 }

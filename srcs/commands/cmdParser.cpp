@@ -29,7 +29,7 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 	std::vector<std::string> commands = splitString(cmd, ' ');
-	
+	serv.findClientFd(fd).addCmdToHistoric(cmd);
 	serv.cmdParseMessage(fd, serv, commands);
 
 	if (cmd == "CAP" || cmd == "LS" || cmd == "CAP LS")

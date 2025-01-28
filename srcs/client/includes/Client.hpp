@@ -15,6 +15,7 @@
 #include "../../utils/includes/colors.hpp"
 #include <ctime>
 #include <iostream>
+#include <vector>
 
 class Client
 {
@@ -26,8 +27,10 @@ class Client
 	int			_serverSock;
 	std::string _IPadd;
 	
+	///? infos sur le clients
 	unsigned long nbPing;
 	std::time_t connect_time;
+	std::vector<std::string> historic;
 	//std::vector<std::string> channelsList;
 
   public:
@@ -44,6 +47,7 @@ class Client
 	void		setNickname(std::string name);
 	void		setRealName(std::string name);
 	void		setNbPingUp();
+	void		addCmdToHistoric(std::string &cmd);
 
 	//? getters
 	int 		Fd() const;
@@ -53,6 +57,7 @@ class Client
 	std::string realName() const;
 	size_t  	getNbPing() const;
 	std::time_t getConnectTime() const;
+	std::vector<std::string> getHistoric() const;
 
 	// listen
 	void	ReceiveMessage();
