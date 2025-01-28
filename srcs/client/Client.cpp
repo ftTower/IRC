@@ -12,10 +12,11 @@
 
 #include "includes/Client.hpp"
 #include "../../server/includes/Server.hpp"
+#include <limits>
 
 //!Base
 
-Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock) {
+Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), nbPing(0) {
 }
 
 Client::~Client() {}
@@ -45,6 +46,11 @@ void		Client::setRealName(std::string name){
 	this->_realName = name;
 }
 
+void		Client::setNbPingUp() {
+    if (this->nbPing < std::numeric_limits<unsigned long>::max())
+        this->nbPing += 1;
+}
+
 
 //? getters
 
@@ -66,6 +72,10 @@ std::string Client::nickName() const {
 
 std::string Client::realName() const{
 	return (this->_realName);
+}
+
+unsigned long  Client::getNbPing() const {
+    return (this->nbPing);
 }
 
 // listen

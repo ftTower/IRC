@@ -26,6 +26,7 @@ class Client
 	int			_serverSock;
 	std::string _IPadd;
 	
+	unsigned long nbPing;
 	//std::vector<std::string> channelsList;
 
   public:
@@ -41,6 +42,7 @@ class Client
 	void 		setIPadd(const std::string &IPadd);
 	void		setNickname(std::string name);
 	void		setRealName(std::string name);
+	void		setNbPingUp();
 
 	//? getters
 	int 		Fd() const;
@@ -48,6 +50,7 @@ class Client
 	std::string IPadd() const;
 	std::string nickName() const;
 	std::string realName() const;
+	size_t  	getNbPing() const;
 
 
 	// listen

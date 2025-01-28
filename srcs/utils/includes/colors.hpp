@@ -53,3 +53,5 @@
 
 // Réinitialisation des couleurs
 #define RESET           "\033[0m"
+
+#define LINE			"======================================================================="

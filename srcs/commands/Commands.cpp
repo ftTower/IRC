@@ -83,8 +83,8 @@ void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	const char *Pong = "PONG localhost\n";
 	if (send(fd, Pong, strlen(Pong), 0) < 0)
 		throw(std::runtime_error(std::string("failed to send : ") + cmd[0]));
-		
 	serv.pongMessage(fd);
+	serv.findClientFd(fd).setNbPingUp();
 }
 
 void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd)

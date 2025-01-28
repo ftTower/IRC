@@ -64,6 +64,8 @@ class Server {
 		//? commands messages
 		void	nickMessage(int fd, const Client &client);
 		void	pongMessage(int fd);
+		//? routine messages
+		void	usersMessage();
 			
 		//! methods
 		void	Init();

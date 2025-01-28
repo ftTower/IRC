@@ -21,10 +21,11 @@ void	Server::nickMessage(int fd, const Client &client) {
 }
 
 void	Server::pongMessage(int fd) {
-	std::cout 	<< YELLOW_BG
-				<< BOLD_YELLOW
-				<< "PONGED CLIENT "
-				<< fd
-				<< RESET
-				<< std::endl;
+	//std::cout 	<< YELLOW_BG
+	//			<< BOLD_YELLOW
+	//			<< "PONGED CLIENT "
+	//			<< fd
+	//			<< RESET
+	//			<< std::endl;
+	(void)fd;
 }
