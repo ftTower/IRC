@@ -13,7 +13,7 @@
 #pragma once
 
 #include "../../utils/includes/colors.hpp"
-
+#include <ctime>
 #include <iostream>
 
 class Client
@@ -27,6 +27,7 @@ class Client
 	std::string _IPadd;
 	
 	unsigned long nbPing;
+	std::time_t connect_time;
 	//std::vector<std::string> channelsList;
 
   public:
@@ -51,7 +52,7 @@ class Client
 	std::string nickName() const;
 	std::string realName() const;
 	size_t  	getNbPing() const;
-
+	std::time_t getConnectTime() const;
 
 	// listen
 	void	ReceiveMessage();

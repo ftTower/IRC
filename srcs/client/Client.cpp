@@ -16,7 +16,7 @@
 
 //!Base
 
-Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), nbPing(0) {
+Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), nbPing(0), connect_time(std::time(0)) {
 }
 
 Client::~Client() {}
@@ -77,6 +77,11 @@ std::string Client::realName() const{
 unsigned long  Client::getNbPing() const {
     return (this->nbPing);
 }
+
+std::time_t Client::getConnectTime() const {
+    return (this->connect_time);
+}
+
 
 // listen
 
