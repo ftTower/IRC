@@ -67,6 +67,7 @@ class Server {
 		void	pongMessage(int fd);
 		//? routine messages
 		void	usersMessage();
+		void	channelMessage();
 			
 		//! methods
 		void	Init();

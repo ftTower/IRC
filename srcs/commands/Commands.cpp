@@ -43,6 +43,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
 	
 	serv.nickMessage(fd, client);
+	serv.usersMessage();
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -131,7 +132,7 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		std::cout << tmp.getUsersList()[i].nickName() << " ";
 	}
 	std::cout << std::endl;
-
+	serv.channelMessage();
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)

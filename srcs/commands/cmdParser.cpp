@@ -32,7 +32,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 	serv.findClientFd(fd).addCmdToHistoric(cmd);
 	serv.cmdParseMessage(fd, serv, commands);
 
-	if (cmd == "CAP" || cmd == "LS" || cmd == "CAP LS")
+	if (commands[0] == "CAP" || commands[0] == "LS" || commands[0] == "CAP LS" || commands[0] == "WHOIS")
 		return ;
 	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 	void (*foo[])(Server&,int,std::vector<std::string>) = {

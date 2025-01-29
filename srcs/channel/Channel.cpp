@@ -3,7 +3,7 @@
 
 
 
-Channel::Channel(std::string &Name): _name(Name), users() {
+Channel::Channel(std::string &Name): _name(Name), topic("no topic"),users(), creationTime(std::time(0)) {
 	for(size_t i = 0; i < 4; i++)
         modes[i] = false;
 }
@@ -31,3 +31,17 @@ std::vector <Client> Channel::getUsersList() {
 std::string	Channel::getChanName(void){
     return(this->_name);
 }
+
+std::string Channel::getTopic(void) {
+    return (this->topic);
+}
+
+bool* Channel::getModes() {
+    return (this->modes);
+}
+
+std::time_t Channel::getCreationTime(void) {
+    return(this->creationTime);
+}
+
+
