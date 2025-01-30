@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 09:40:19 by lleciak           #+#    #+#             */
-/*   Updated: 2025/01/30 14:32:06 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/01/30 14:53:46 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,6 +243,12 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd){
     (void)cmd;
+	// The mask can be one of the following:
+
+    // A channel name, in which case the channel members are listed.
+    // An exact nickname, in which case a single user is returned.
+    // A mask pattern, in which case all visible users whose nickname matches are listed. Servers MAY match other user-specific values, such as the hostname, server, real name or username. Servers MAY not support mask patterns and return an empty list.
+
     std::cout << "Dans quel(s) channel(s) est " << serv.findClientFd(fd).nickName() << " ?" << std::endl;
 }
 
