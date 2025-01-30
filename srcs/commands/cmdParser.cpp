@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 11:09:56 by lleciak           #+#    #+#             */
-/*   Updated: 2024/12/16 10:49:18 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/01/30 14:33:01 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 
 	if (commands[0] == "CAP" || commands[0] == "LS" || commands[0] == "CAP LS" || commands[0] == "WHOIS")
 		return ;
-	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
-	void (*foo[])(Server&,int,std::vector<std::string>) = {
-		nick_cmd, user_cmd, pong_cmd, ping_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
-	};
+	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
+    void (*foo[])(Server&,int,std::vector<std::string>) = {
+        nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
+    };
 	for(size_t i = 0; i < 14; i++)
 		if (cmd.find(cmds[i]) != std::string::npos) {
 			try {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commands.cpp                                       :+:      :+:    :+:   */
+/*   Commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 09:40:19 by lleciak           #+#    #+#             */
-/*   Updated: 2024/12/16 10:49:57 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/01/30 14:32:06 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,34 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	//std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
 	// serv.ClearClients(fd);
 	// close(fd);
+}
+
+void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd){
+    (void)cmd;
+    std::cout << "Dans quel(s) channel(s) est " << serv.findClientFd(fd).nickName() << " ?" << std::endl;
+}
+
+// aligner les :
+void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd){
+    if (cmd.size() == 1)
+    {
+        std::cout << "ircname: " << serv.findClientFd(fd).nickName() << std::endl;
+        std::cout << "modes: " << "add modes ? ex: +ixz" << std::endl;
+        std::cout << "hostname: " << "88-121-161-222.subs.proxad.ned 88.121.161.222" << std::endl;
+        std::cout << "server: notre super server irc trop cool.org" << std::endl;
+        std::cout << "idle: " << "0 day 0 hours 0 mins 10secs [signon: Thu Jan 30 13:47:44 2025]" << std::endl;
+        std::cout << "End of WHOIS" << std::endl;
+    }
+    if (cmd.size() == 2)
+    {
+        std::string name = cmd[1];
+        std::cout << "ircname: " << serv.findClientNick(name).nickName() << std::endl;
+        std::cout << "modes: " << "add modes ? ex: +ixz" << std::endl;
+        std::cout << "hostname: " << "88-121-161-222.subs.proxad.ned 88.121.161.222" << std::endl;
+        std::cout << "server: notre super server irc trop cool.org" << std::endl;
+        std::cout << "idle: " << "0 day 0 hours 0 mins 10secs [signon: Thu Jan 30 13:47:44 2025]" << std::endl;
+        std::cout << "End of WHOIS" << std::endl;
+    }
 }
 
 
