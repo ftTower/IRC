@@ -23,9 +23,13 @@
 // }
 
 void handleClientName(Server &serv, Client &client ,std::string nickName) {
+	
+	nickName.erase(std::remove_if(nickName.begin(), nickName.end(), ::isspace), nickName.end());
+	
 	while(serv.isNickUsed(nickName, client.Fd()))
 		nickName += "_";
 	client.setNickname(nickName);
+	std::cout << "[" << nickName << "]\n";
 }
 
 // Pour donner au client un nickname ou changer le precedent.

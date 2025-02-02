@@ -29,6 +29,6 @@ int	main(int argc, char **argv)
 		S.CloseFds();
 		std::cerr << RED_BG << BOLD_RED << "ERROR : " << e.what() << std::endl;
 	}
-	
+	closingMessage();
 	return (0);
 }

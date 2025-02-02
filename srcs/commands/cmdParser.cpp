@@ -46,7 +46,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
     void (*foo[])(Server&,int,std::vector<std::string>) = {
         nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
     };
-	for(size_t i = 0; i < 14; i++)
+	for(size_t i = 0; i < cmds->size(); i++)
 		if (cmd.find(cmds[i]) != std::string::npos) {
 			try {
 				foo[i](serv,fd, commands);}
@@ -55,5 +55,5 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			}
 			return;
 		}
-	std::cerr << RED_BG << "found no cmd" << RESET << std::endl;
+	std::cerr << RED_BG << "found no cmd in " << cmd << RESET << std::endl;
 }

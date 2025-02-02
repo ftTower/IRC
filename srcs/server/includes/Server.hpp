@@ -121,3 +121,5 @@ void writeToFile(const std::string &filename, const std::string &content);
 void throwSocketOptionError(int socketOptionRet, std::string optionType);
 
 std::string getTimestamp();
+
+void	closingMessage();
