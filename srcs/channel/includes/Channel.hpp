@@ -31,5 +31,7 @@ class Channel {
 		
 		bool* getModes();
 		void addClient(Client &newClient);
+		
+		void	setModes(t_mode mode, bool toSet);
 		//~Channel();
 };

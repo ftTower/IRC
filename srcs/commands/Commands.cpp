@@ -43,7 +43,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
 	
 	serv.nickMessage(fd, client);
-	serv.usersMessage();
+	serv.usersMessage(3, true);
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -132,7 +132,7 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		std::cout << tmp.getUsersList()[i].nickName() << " ";
 	}
 	std::cout << std::endl;
-	serv.channelMessage();
+	serv.channelMessage(3, true);
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -188,6 +188,7 @@ void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Commande utilisee pour inviter un utilisateur dans un channel
 
 	// Parameters: <nickname> <channel>
+	
 }
 
 void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -212,6 +213,38 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// d'une target donne.
 
 	// Parameters: <target> [<modestring> [<mode arguments>...]]
+	//if (cmd.size() < 3) {
+    //    throw std::runtime_error("Not enough parameters for MODE command");
+    //}
+	
+	//Channel buf = serv.getChan(cmd[1]);
+	
+	//bool toSet;
+	 
+	//if (cmd[2].empty())
+	//	throw("Invalid argument for MODE command");
+	//else if (cmd[2][0] == '+')
+	//	toSet = true;
+	//else if (cmd[2][0] == '-')
+	//	toSet = false;
+	//else 
+	//	throw("Invalid argument for MODE command");
+		
+	
+	
+	
+    //for (size_t i = 2; i < cmd.size(); ++i) {
+	//	if (!cmd[i].empty() || !cmd[i][1])
+	//		break ;
+	//	else if (cmd[i][1] == 'I') 
+	//		buf.setModes(MODE_INVITE, toSet);
+	//	else if (cmd[i][1] == 'T') 
+	//		buf.setModes(MODE_INVITE, toSet);
+	//	else if (cmd[i][1] == 'K') 
+	//		buf.setModes(MODE_KEY, toSet);
+	//	else if (cmd[i][1] == 'O') 
+	//		buf.setModes(MODE_OP, toSet);
+	//}
 }
 
 void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)

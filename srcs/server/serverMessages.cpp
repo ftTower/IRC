@@ -3,7 +3,41 @@
 #include <iomanip>
 #include "includes/Server.hpp"
 
+#include <fstream>
+
+void writeToFile(const std::string &filename, const std::string &content) {
+    std::ofstream file;
+    
+    // Ouvre le fichier en mode écriture (crée s'il n'existe pas, écrase sinon)
+    file.open(filename.c_str(), std::ios::out | std::ios::app);
+    
+    if (!file) {
+        std::cerr << "Erreur lors de l'ouverture du fichier : " << filename << std::endl;
+        return;
+    }
+    
+    file << content << std::endl;
+    file.close();
+}
+
+void	closingMessage() {
+	std::string buf = getTimestamp() + "\t SERVER  OFF\n";
+	writeToFile("output.csv", buf);
+	
+	std::cout 	<< std::endl
+				<< getTimestamp()
+				<< RED_BG
+				<< BOLD_RED
+				<< "\tSERVER DOWN"
+				<< RESET
+				<< std::endl;
+}
+
+
 void	Server::initMessage() {
+std::string buf = getTimestamp() + "\t SERVER  ON\n";
+writeToFile("output.csv", buf);
+
 std::cout 	<< getTimestamp()
 			<< GREEN_BG 
 			<< "\tSERVER  ON "
@@ -24,15 +58,19 @@ std::cout 	<< getTimestamp()
 			//<< RESET
 			<< std::endl
 			<< std::endl;
+			
 }
 
 void	Server::connectedMessage(int incomingFd) {
+	std::string buf = getTimestamp() + "\tNEW CLIENT\n";
+	writeToFile("output.csv", buf);
+
 	std::cout 	<< BLACK_BG
 				<< getTimestamp()
 				<< RESET
 				<< "\t"
 				<< GREEN_BG
-				<< "Client "
+				<< " Client "
 				<< incomingFd
 				<< " Connected !"
 				<< RESET
@@ -40,6 +78,9 @@ void	Server::connectedMessage(int incomingFd) {
 }
 
 void	Server::disconnectedMessage(int fd) {
+	std::string buf = getTimestamp() + "\tREMOVED CLIENT\n";
+	writeToFile("output.csv", buf);
+	
 	std::cout 	<< BLACK_BG
 				<< getTimestamp()
 				<< RESET
@@ -74,16 +115,18 @@ std::string formatHistoric(std::vector<std::string> historic, size_t length) {
 	return (formatString(tmp, length));
 }
 
-void	Server::usersMessage() {
-    std::cout 	<< std::endl
-				<< BLACK_BG
-				<< getTimestamp()
-				<< RESET
-				<< CYAN_BG
+void	Server::usersMessage(size_t size, bool displayTime) {
+    std::cout 	<< std::endl;
+	if (displayTime) {
+		std::cout 	<< BLACK_BG
+					<< getTimestamp()
+					<< RESET;
+	}
+	std::cout 	<< CYAN_BG
 				<< "\tUSERS CONNECTED |   CONNECTION TIME   | PONG COUNTER |   LAST COMMANDS     "  
 				<< RESET
 				<< std::endl;
-	for(size_t i = 0; i < clients.size() && i < 6; i++) {
+	for(size_t i = 0; i < clients.size() && i < size; i++) {
 		
 		std::time_t connectTime = clients[clients.size() - 1 - i].getConnectTime();
 		std::tm *ptm = std::localtime(&connectTime);
@@ -107,18 +150,21 @@ void	Server::usersMessage() {
 	std::cout << std::endl;
 }
 
-void	Server::channelMessage() {
-	std::cout 	<< std::endl
-				<< BLACK_BG
-				<< getTimestamp()
-				<< RESET
-				<< YELLOW_BG
+void	Server::channelMessage(size_t size, bool displayTime) {
+	std::cout 	<< std::endl;
+	if (displayTime) {
+		std::cout 	<< BLACK_BG
+					<< getTimestamp()
+					<< RESET;
+		
+	}
+	std::cout	<< YELLOW_BG
 				<< "\t     CHANNELS   |       TOPICS        |     MODES    |    CREATION TIME    "  
 				<< RESET
 				<< std::endl;
 	
 	
-	for(size_t i = 0; i < channels.size(); i++) {
+	for(size_t i = 0; i < channels.size() && i < size; i++) {
 		std::time_t connectTime = channels[channels.size() - 1 - i].getCreationTime();
 		std::tm *ptm = std::localtime(&connectTime);
 		char buffer[32];

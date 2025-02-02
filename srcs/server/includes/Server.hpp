@@ -58,16 +58,18 @@ class Server {
 		Server(int Port);
 
 		//! messages
+		void	closingMessage();
 		void	initMessage();
 		void	connectedMessage(int incomingFd);
 		void	disconnectedMessage(int fd);
+		
 		//? commands messages
 		void	cmdParseMessage(int fd, Server &serv, std::vector<std::string> commands);
 		void	nickMessage(int fd, const Client &client);
 		void	pongMessage(int fd);
 		//? routine messages
-		void	usersMessage();
-		void	channelMessage();
+		void	usersMessage(size_t size, bool displayTime);
+		void	channelMessage(size_t size, bool displayTime);
 			
 		//! methods
 		void	Init();
@@ -115,6 +117,7 @@ class Server {
 
 };
 
+void writeToFile(const std::string &filename, const std::string &content);
 void throwSocketOptionError(int socketOptionRet, std::string optionType);
 
 std::string getTimestamp();

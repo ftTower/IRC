@@ -44,4 +44,23 @@ std::time_t Channel::getCreationTime(void) {
     return(this->creationTime);
 }
 
+void	Channel::setModes(t_mode mode, bool toSet) {
+    switch (mode)
+    {
+        case MODE_INVITE:
+            modes[MODE_INVITE] = toSet;
+            break;
+        case MODE_TOPIC:
+            modes[MODE_TOPIC] = toSet;
+        break;
+        case MODE_KEY:
+            modes[MODE_KEY] = toSet;
+            break;
+        case MODE_OP:
+            modes[MODE_OP] = toSet;
+        break;
+        default:
+            break;
+    }
+}
 

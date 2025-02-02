@@ -29,9 +29,17 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 	std::vector<std::string> commands = splitString(cmd, ' ');
-	serv.findClientFd(fd).addCmdToHistoric(cmd);
-	serv.cmdParseMessage(fd, serv, commands);
 
+
+	Client tmp = serv.findClientFd(fd);
+
+	tmp.addCmdToHistoric(cmd);
+	
+	std::string buf = getTimestamp() + "\t" + tmp.nickName() + " : ";
+	for(size_t i = 0; i < commands.size(); i++)
+		buf += commands[i] += " ";
+	writeToFile("output.csv", buf + "\n");
+	
 	if (commands[0] == "CAP" || commands[0] == "LS" || commands[0] == "CAP LS" || commands[0] == "WHOIS")
 		return ;
 	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
