@@ -19,7 +19,11 @@
 // Parameters: <arg>
 // void	cap_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // {
-
+void    capls_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
+	(void)serv;
+	(void)fd;
+	(void)cmd;
+}
 // }
 
 void handleClientName(Server &serv, Client &client ,std::string nickName) {
@@ -29,8 +33,8 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 	while(serv.isNickUsed(nickName, client.Fd()))
 		nickName += "_";
 	client.setNickname(nickName);
-	std::cout << "[" << nickName << "]\n";
 }
+
 
 // Pour donner au client un nickname ou changer le precedent.
 // Parameters: <nickname>
@@ -129,13 +133,6 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addChannel(Channel(cmd[1]));
 	}
 	serv.addClientToChannel(fd, cmd[1]);
-	
-	Channel tmp = serv.getChan(cmd[1]);
-	std::cout << tmp.getChanName() << "\t";
-	for (size_t i = 0; i < tmp.getUsersList().size(); i++) {
-		std::cout << tmp.getUsersList()[i].nickName() << " ";
-	}
-	std::cout << std::endl;
 	serv.channelMessage(3, true);
 }
 

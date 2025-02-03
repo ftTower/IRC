@@ -20,6 +20,7 @@
 
 class Server;
 
+void    capls_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void	user_cmd(Server &serv, int fd, std::vector<std::string> cmd);//, std::string Ip, std::string realName);
 void	ping_cmd(Server &serv, int fd, std::vector<std::string> cmd);

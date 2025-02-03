@@ -16,6 +16,7 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
+#include <limits>
 
 class Client
 {
@@ -47,7 +48,7 @@ class Client
 	void		setNickname(std::string name);
 	void		setRealName(std::string name);
 	void		setNbPingUp();
-	void		addCmdToHistoric(std::string &cmd);
+	void		addCmdToHistoric(const std::string &cmd);
 
 	//? getters
 	int 		Fd() const;

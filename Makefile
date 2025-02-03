@@ -77,7 +77,7 @@ run: re
 valgrind: re
 	@echo "$(YELLOW) [Valgrind]$(RESET) Running memory analysis with Valgrind"
 	valgrind --leak-check=full ./$(NAME) 6667
-
+	make fclean
 
 # Special rules
 .PHONY: all clean fclean re run valgrind

@@ -12,7 +12,6 @@
 
 #include "includes/Client.hpp"
 #include "../../server/includes/Server.hpp"
-#include <limits>
 
 //!Base
 
@@ -51,8 +50,8 @@ void		Client::setNbPingUp() {
         this->nbPing += 1;
 }
 
-void		Client::addCmdToHistoric(std::string &cmd) {
-    this->historic.push_back(cmd);
+void		Client::addCmdToHistoric(const std::string &cmd) {
+    historic.push_back(cmd);
 }
 
 

@@ -30,30 +30,37 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 	std::vector<std::string> commands = splitString(cmd, ' ');
 
-
-	Client tmp = serv.findClientFd(fd);
-
-	tmp.addCmdToHistoric(cmd);
+	try {
+		serv.findClientFd(fd).addCmdToHistoric(cmd);
 	
-	std::string buf = getTimestamp() + "\t" + tmp.nickName() + " : ";
-	for(size_t i = 0; i < commands.size(); i++)
-		buf += commands[i] += " ";
-	writeToFile("output.csv", buf + "\n");
-	
-	if (commands[0] == "CAP" || commands[0] == "LS" || commands[0] == "CAP LS" || commands[0] == "WHOIS")
-		return ;
-	std::string cmds[] = {"NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
-    void (*foo[])(Server&,int,std::vector<std::string>) = {
-        nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
-    };
-	for(size_t i = 0; i < cmds->size(); i++)
-		if (cmd.find(cmds[i]) != std::string::npos) {
-			try {
-				foo[i](serv,fd, commands);}
-			catch (std::exception &e) {
-				std::cerr << RED_BG << "ERROR CMD [" + cmd + "]" << RESET << " : " << e.what() << std::endl;
+		std::stringstream ss;
+		ss << fd;
+		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + serv.findClientFd(fd).nickName() + "\t";
+		for(size_t i = 0; i < commands.size(); i++)
+			buf += commands[i] += " ";
+		writeToFile("output.csv", buf + "\n");
+		
+		//if ((commands.size() >= 1 && commands[0] == "CAP") || (commands.size() >= 2 && commands[0] == "CAP" && commands[1] == "LS"))
+		//	return ;
+		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
+		void (*foo[])(Server&,int,std::vector<std::string>) = {
+			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
+		};
+		for(size_t i = 0; i < sizeof(cmds)/sizeof(cmds[0]); i++)
+			if (cmd.find(cmds[i]) != std::string::npos) {
+				try {
+					foo[i](serv,fd, commands);}
+				catch (std::exception &e) {
+					std::cerr << RED_BG << "ERROR CMD [" + cmd + "]" << RESET << " : " << e.what() << std::endl;
+				}
+				return;
 			}
-			return;
-		}
-	std::cerr << RED_BG << "found no cmd in " << cmd << RESET << std::endl;
+		std::cerr << "\t\t\t" << RED_BG << "found no commands > " << cmd << RESET << std::endl;
+	} catch (std::exception &e) {
+		std::cerr << RED_BG << "Failed to find client" << RESET << " : " << e.what() << std::endl;
+		
+	}
+
+	
+	
 }

@@ -21,7 +21,7 @@ void writeToFile(const std::string &filename, const std::string &content) {
 }
 
 void	closingMessage() {
-	std::string buf = getTimestamp() + "\t SERVER  OFF\n";
+	std::string buf = getTimestamp() + "\t✖️ SERVER  OFF\n";
 	writeToFile("output.csv", buf);
 	
 	std::cout 	<< std::endl
@@ -35,7 +35,7 @@ void	closingMessage() {
 
 
 void	Server::initMessage() {
-std::string buf = getTimestamp() + "\t SERVER  ON\n";
+std::string buf = getTimestamp() + "\t✅ SERVER  ON\n";
 writeToFile("output.csv", buf);
 
 std::cout 	<< getTimestamp()
@@ -62,7 +62,7 @@ std::cout 	<< getTimestamp()
 }
 
 void	Server::connectedMessage(int incomingFd) {
-	std::string buf = getTimestamp() + "\tNEW CLIENT\n";
+	std::string buf = getTimestamp() + "\t\tNEW CLIENT\n";
 	writeToFile("output.csv", buf);
 
 	std::cout 	<< BLACK_BG
@@ -78,7 +78,7 @@ void	Server::connectedMessage(int incomingFd) {
 }
 
 void	Server::disconnectedMessage(int fd) {
-	std::string buf = getTimestamp() + "\tREMOVED CLIENT\n";
+	std::string buf = getTimestamp() + "\t\tREMOVED CLIENT\n";
 	writeToFile("output.csv", buf);
 	
 	std::cout 	<< BLACK_BG
@@ -133,7 +133,6 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 		char buffer[32];
 		std::strftime(buffer, 32, "%Y-%m-%d %H:%M:%S", ptm);
 
-		
 		
 		std::cout 	<< "\t\t"
 							//<< clients[clients.size() - 1 - i].Fd()
