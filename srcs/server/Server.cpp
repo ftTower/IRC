@@ -53,7 +53,7 @@ void Server::Run()
 
 	while (!Server::_Signal)
 	{
-		if ((poll(&fds[0], fds.size(), -1) == -1) && Server::_Signal == false)
+		if ((poll(&fds[0], fds.size(), 100) == -1) && Server::_Signal == false)
 			throw(std::runtime_error(ERR_POLL_FAIL));
 		for (size_t i = 0; i < fds.size(); i++)
 		{
@@ -65,6 +65,10 @@ void Server::Run()
 					ReceiveNewData(fds[i].fd);
 			}
 		}
+		
+		if (shouldTriggerEveryXSeconds(5))
+			serverMessage();
+		
 	}
 	CloseFds();
 }

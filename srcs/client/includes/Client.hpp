@@ -32,7 +32,7 @@ class Client
 	unsigned long nbPing;
 	std::time_t connect_time;
 	std::vector<std::string> historic;
-	//std::vector<std::string> channelsList;
+	std::vector<std::string> channelsList;
 
   public:
 	//!Base
@@ -49,6 +49,7 @@ class Client
 	void		setRealName(std::string name);
 	void		setNbPingUp();
 	void		addCmdToHistoric(const std::string &cmd);
+	void		addChannelToList(const std::string &c);
 
 	//? getters
 	int 		Fd() const;
@@ -59,6 +60,7 @@ class Client
 	size_t  	getNbPing() const;
 	std::time_t getConnectTime() const;
 	std::vector<std::string> getHistoric() const;
+	std::vector<std::string> getChannelList() const;
 
 	// listen
 	void	ReceiveMessage();

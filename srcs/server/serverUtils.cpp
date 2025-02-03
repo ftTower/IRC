@@ -114,3 +114,14 @@ std::string getTimestamp() {
     std::strftime(buffer, sizeof(buffer), "[%H:%M:%S]", std::localtime(&now));
     return std::string(buffer);
 }
+
+bool shouldTriggerEveryXSeconds(int x) {
+    static std::time_t lastTrigger = std::time(NULL);
+    std::time_t now = std::time(NULL);
+    
+    if (now - lastTrigger >= x) {
+        lastTrigger = now;
+        return true;
+    }
+    return false;
+}

@@ -54,6 +54,9 @@ void		Client::addCmdToHistoric(const std::string &cmd) {
     historic.push_back(cmd);
 }
 
+void		Client::addChannelToList(const std::string &c) {
+    channelsList.push_back(c);
+}
 
 //? getters
 
@@ -88,6 +91,11 @@ std::time_t Client::getConnectTime() const {
 std::vector<std::string> Client::getHistoric() const {
     return (this->historic);
 }
+
+std::vector<std::string> Client::getChannelList() const {
+    return (this->channelsList);
+}
+
 
 // listen
 

@@ -70,7 +70,8 @@ class Server {
 		//? routine messages
 		void	usersMessage(size_t size, bool displayTime);
 		void	channelMessage(size_t size, bool displayTime);
-			
+		void	serverMessage();
+		
 		//! methods
 		void	Init();
 		void	Run();
@@ -121,5 +122,6 @@ void writeToFile(const std::string &filename, const std::string &content);
 void throwSocketOptionError(int socketOptionRet, std::string optionType);
 
 std::string getTimestamp();
+bool shouldTriggerEveryXSeconds(int x);
 
 void	closingMessage();

@@ -51,7 +51,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
 	
 	serv.nickMessage(fd, client);
-	serv.usersMessage(3, true);
+	//serv.usersMessage(3, true);
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -116,7 +116,7 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	(void) fd;
 	(void) cmd;
 	// Client& client = serv.findClientFd(fd);
-
+	std::cout << "PASS CMD\n";
 	// if (cmd[1].empty()){
 	// 	ERR_NEEDMOREPARAMS
 	// }
@@ -129,11 +129,14 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	(void)fd;
 	// Channel& chan = serv.getChan(cmd[1]);
 	// est-ce que le channel existe ?
+	if (cmd.size() < 2)
+		throw(std::runtime_error("Not enough parameters for JOIN command"));
 	if (!serv.channelExist(cmd[1])){
 		serv.addChannel(Channel(cmd[1]));
 	}
 	serv.addClientToChannel(fd, cmd[1]);
-	serv.channelMessage(3, true);
+	serv.findClientFd(fd).addChannelToList(cmd[1]);
+	//serv.channelMessage(3, true);
 }
 
 void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -175,7 +178,7 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
 
     for (size_t i = 0; i < targets.size(); i++)
         std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
-    std::cout << "\n" << RED_BG << "Message: " << message << RESET << "\n";
+    std::cout << RED_BG << "Message: " << message << RESET << "\n";
 
     serv.sendMessage(targets, message, sender);
 }
@@ -283,7 +286,12 @@ void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd){
     // An exact nickname, in which case a single user is returned.
     // A mask pattern, in which case all visible users whose nickname matches are listed. Servers MAY match other user-specific values, such as the hostname, server, real name or username. Servers MAY not support mask patterns and return an empty list.
 
-    std::cout << "Dans quel(s) channel(s) est " << serv.findClientFd(fd).nickName() << " ?" << std::endl;
+    //std::cout << "Dans quel(s) channel(s) est " << serv.findClientFd(fd).nickName() << " ?\n" << std::endl;
+	std::cout << getTimestamp() << "\t" << serv.findClientFd(fd).nickName() << " ";
+	std::vector<std::string> channelsList = serv.findClientFd(fd).getChannelList();
+	for (size_t i = 0; i < channelsList.size(); i++)
+		std::cout << channelsList[i] << " ";
+	std::cout << "\n";
 }
 
 // aligner les :

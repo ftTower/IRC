@@ -150,15 +150,17 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 }
 
 void	Server::channelMessage(size_t size, bool displayTime) {
-	std::cout 	<< std::endl;
+	std::cout << std::endl;
 	if (displayTime) {
 		std::cout 	<< BLACK_BG
 					<< getTimestamp()
 					<< RESET;
 		
 	}
+	else
+		std::cout << "\t";
 	std::cout	<< YELLOW_BG
-				<< "\t     CHANNELS   |       TOPICS        |     MODES    |    CREATION TIME    "  
+				<< "\t     CHANNELS   |    CREATION TIME    |     MODES    |        TOPICS       "  
 				<< RESET
 				<< std::endl;
 	
@@ -174,7 +176,8 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 							//<< " "
 							<< formatString(channels[channels.size() - 1 - i].getChanName(), 15)
 							<< " | "
-							<< formatString(channels[channels.size() - 1 - i].getTopic(), 19)
+							<< std::setw(19)
+							<< buffer
 							<< " | ";
 		if (this->channels[i].getModes()[MODE_INVITE])
 			std::cout << GREEN_BG << " I " << RESET;
@@ -192,12 +195,16 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 			std::cout << GREEN_BG << " T " << RESET;
 		else 						
 			std::cout << RED_BG << " T " << RESET;
-		std::cout 	<< " | "
-					<< std::setw(11)
-					<< buffer
+		std::cout 	<< " |  "
+					<< formatString(channels[channels.size() - 1 - i].getTopic(), 11)
 					<< std::endl;
 	}
 }
 
-
+void	Server::serverMessage() {
+	
+	usersMessage(10, true);
+	channelMessage(10, false);
+	
+}
 
