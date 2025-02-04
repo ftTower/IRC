@@ -29,19 +29,27 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
 	std::vector<std::string> commands = splitString(cmd, ' ');
+	if (commands.empty())
+		return ;
+
 
 	try {
-		serv.findClientFd(fd).addCmdToHistoric(cmd);
+		Client &client = serv.findClientFd(fd);
+		client.addCmdToHistoric(cmd);
 	
 		std::stringstream ss;
 		ss << fd;
-		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + serv.findClientFd(fd).nickName() + "\t";
+		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + client.nickName() + "\t";
 		for(size_t i = 0; i < commands.size(); i++)
 			buf += commands[i] += " ";
 		writeToFile("output.csv", buf + "\n");
 		
-		//if ((commands.size() >= 1 && commands[0] == "CAP") || (commands.size() >= 2 && commands[0] == "CAP" && commands[1] == "LS"))
-		//	return ;
+		std::cout << BLUE_TEXT << commands[0] << RESET << std::endl;
+		if (commands[0] != "PASS " && !client.getAuthenticated()) {
+			send(fd, "462 :You may not register\r\n", 28, 0);
+			return ;
+		}
+		
 		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 		void (*foo[])(Server&,int,std::vector<std::string>) = {
 			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd

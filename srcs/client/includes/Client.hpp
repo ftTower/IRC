@@ -28,6 +28,8 @@ class Client
 	int			_serverSock;
 	std::string _IPadd;
 	
+	bool	_authenticated;
+	
 	///? infos sur le clients
 	unsigned long nbPing;
 	std::time_t connect_time;
@@ -50,7 +52,7 @@ class Client
 	void		setNbPingUp();
 	void		addCmdToHistoric(const std::string &cmd);
 	void		addChannelToList(const std::string &c);
-
+	void		setAuthenticated(bool toSet);
 	//? getters
 	int 		Fd() const;
 	int			ServerSock() const;
@@ -61,6 +63,8 @@ class Client
 	std::time_t getConnectTime() const;
 	std::vector<std::string> getHistoric() const;
 	std::vector<std::string> getChannelList() const;
+	bool		getAuthenticated() const;
+	
 
 	// listen
 	void	ReceiveMessage();

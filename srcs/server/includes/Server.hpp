@@ -46,6 +46,8 @@ class Server {
 		int	_Port;
 		int _SocketFd;
 		
+		std::string _password;
+		
 		static bool _Signal;
 
 		std::vector<Client> clients;
@@ -55,7 +57,7 @@ class Server {
 
 	public :
 		//! constructors
-		Server(int Port);
+		Server(char **argv);
 
 		//! messages
 		void	closingMessage();
@@ -95,7 +97,7 @@ class Server {
 		int	Port() const;
 		int SocketFd() const;
 		std::vector<Channel> getChannelList();
-
+		std::string getPassword() const;
 		//!signal
 		static void SignalHandler(int signum);
 

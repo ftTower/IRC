@@ -73,10 +73,16 @@ run: re
 	@echo 
 	./$(NAME) 6667
 	make fclean
+	
+pass: re
+	@echo "$(YELLOW) [Running  ]$(RESET) Executing $(NAME) on port 6667"
+	@echo 
+	./$(NAME) 6667 mdp
+	make fclean
 
 valgrind: re
 	@echo "$(YELLOW) [Valgrind]$(RESET) Running memory analysis with Valgrind"
-	valgrind --leak-check=full ./$(NAME) 6667
+	valgrind --leak-check=full ./$(NAME) 6667 
 	make fclean
 
 # Special rules

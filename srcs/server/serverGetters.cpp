@@ -16,3 +16,7 @@ std::vector<Channel> Server::getChannelList()
 {
 	return (this->channels);
 }
+
+std::string Server::getPassword() const {
+	return (this->_password);
+}

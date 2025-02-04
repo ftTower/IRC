@@ -15,7 +15,7 @@
 
 //!Base
 
-Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), nbPing(0), connect_time(std::time(0)) {
+Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), _authenticated(false), nbPing(0), connect_time(std::time(0)) {
 }
 
 Client::~Client() {}
@@ -58,6 +58,10 @@ void		Client::addChannelToList(const std::string &c) {
     channelsList.push_back(c);
 }
 
+void		Client::setAuthenticated(bool toSet) {
+    _authenticated = toSet;
+}
+
 //? getters
 
 int		Client::ServerSock() const {
@@ -96,6 +100,9 @@ std::vector<std::string> Client::getChannelList() const {
     return (this->channelsList);
 }
 
+bool		Client::getAuthenticated() const {
+    return (this->_authenticated);
+}
 
 // listen
 

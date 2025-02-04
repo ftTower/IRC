@@ -14,10 +14,12 @@
 
 int	main(int argc, char **argv)
 {
-	if (argc != 2)
+	if (argc < 2 || argc > 3 )
 		return (1);
+	
 	std::cout << "\033c";
-	Server S(atoi(argv[1]));
+	
+	Server S(argv);
 	try
 	{
 		signal(SIGINT, Server::SignalHandler);

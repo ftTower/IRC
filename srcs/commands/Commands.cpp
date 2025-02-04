@@ -121,11 +121,20 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	(void) fd;
 	(void) cmd;
 	// Client& client = serv.findClientFd(fd);
-	std::cout << "PASS CMD\n";
+	//std::cout << "PASS CMD\n";
 	// if (cmd[1].empty()){
 	// 	ERR_NEEDMOREPARAMS
 	// }
 	// else if ()
+	if (cmd.size() < 2) {
+		throw std::runtime_error("Not enough parameters for PASS command");
+	}
+
+	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
+
+	if (serv.getPassword() == cmd[1])
+		serv.findClientFd(fd).setAuthenticated(true);
+	
 }
 
 // Parameters: <channel> <password>
