@@ -202,7 +202,7 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 }
 
 void	Server::serverMessage() {
-	
+	//std::cout << "\033c";
 	usersMessage(10, true);
 	channelMessage(10, false);
 	

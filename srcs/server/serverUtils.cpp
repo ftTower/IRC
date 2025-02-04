@@ -16,17 +16,26 @@
 void Server::sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender) {
     std::vector<Client> sendList;
 
+	if (target.empty())
+		return ;
+	
+	for (size_t i = 0; i < target.size(); i++) {
+		std::cout << target[i] << " ";
+	}
+	std::cout << "\n";
+
     for (size_t i = 0; i < target.size(); i++) {
-        if (!this->channels.empty() && this->channelExist(target[i])) {
+		
+		target[i].erase(std::remove_if(target[i].begin(), target[i].end(), ::isspace), target[i].end()); //enlever les whitesspaces superflux
+		
+        if (!this->channels.empty() && target[i][0] == '#' && this->channelExist(target[i])) {
             std::vector<Client> buf = this->getChan(target[i]).getUsersList();
             sendList.insert(sendList.end(), buf.begin(), buf.end());
         } else {
             try {
-				if (target[i][0] == '"')
-					target[i] = target[i].substr(1); // Retirer le '#' pour les canaux privés
 				sendList.push_back(this->findClientNick(target[i]));	
 			} catch (std::exception &e) {
-				std::cerr << "FAILED TO FIND CLIENT NAMED :" << e.what() << std::endl;
+				std::cerr << "\t\t" << RED_BG << sender.nickName() << " sent to a unknown user named [" << e.what() << "] ?" << RESET <<  std::endl;
 			}
         }
     }

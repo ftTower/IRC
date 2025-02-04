@@ -74,6 +74,7 @@ Client &Server::findClientNick(std::string nick)
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
+		std::cout << GREEN_TEXT << "["<<  clients[i].nickName() << "] [" << nick << "]" << std::endl;
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}

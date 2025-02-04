@@ -40,10 +40,15 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 // Parameters: <nickname>
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
+	if (cmd.size() < 2) {
+		throw std::runtime_error("Not enough parameters for NICK command");
+	}
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
 
 	handleClientName(serv, client, nickname);
+	
+	std::cout << "[" << client.nickName() << "]\n"; 
 	
 	std::string welcome = ":server 001 " + client.nickName() + " :Welcome to the IRC server\r\n";
 	
@@ -131,6 +136,7 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// est-ce que le channel existe ?
 	if (cmd.size() < 2)
 		throw(std::runtime_error("Not enough parameters for JOIN command"));
+	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	if (!serv.channelExist(cmd[1])){
 		serv.addChannel(Channel(cmd[1]));
 	}
@@ -165,6 +171,9 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
             std::cerr << "Cible invalide détectée." << std::endl;
             return;
         }
+		//else if (serv.findClientNick(targets[i]))
+		targets[i].erase(std::remove_if(targets[i].begin(), targets[i].end(), ::isspace), targets[i].end());
+		
     }
 
     std::string message;
@@ -218,32 +227,29 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 	// Parameters: <target> [<modestring> [<mode arguments>...]]
 	//if (cmd.size() < 3) {
-    //    throw std::runtime_error("Not enough parameters for MODE command");
-    //}
+	//	throw std::runtime_error("Not enough parameters for MODE command");
+	//}
 	
 	//Channel buf = serv.getChan(cmd[1]);
 	
 	//bool toSet;
 	 
 	//if (cmd[2].empty())
-	//	throw("Invalid argument for MODE command");
+	//	throw std::runtime_error("Invalid argument for MODE command");
 	//else if (cmd[2][0] == '+')
 	//	toSet = true;
 	//else if (cmd[2][0] == '-')
 	//	toSet = false;
 	//else 
-	//	throw("Invalid argument for MODE command");
+	//	throw std::runtime_error("Invalid argument for MODE command");
 		
-	
-	
-	
-    //for (size_t i = 2; i < cmd.size(); ++i) {
-	//	if (!cmd[i].empty() || !cmd[i][1])
+	//for (size_t i = 2; i < cmd.size(); ++i) {
+	//	if (cmd[i].empty() || cmd[i].size() < 2)
 	//		break ;
 	//	else if (cmd[i][1] == 'I') 
 	//		buf.setModes(MODE_INVITE, toSet);
 	//	else if (cmd[i][1] == 'T') 
-	//		buf.setModes(MODE_INVITE, toSet);
+	//		buf.setModes(MODE_TOPIC, toSet);
 	//	else if (cmd[i][1] == 'K') 
 	//		buf.setModes(MODE_KEY, toSet);
 	//	else if (cmd[i][1] == 'O') 

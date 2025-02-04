@@ -66,7 +66,7 @@ void Server::Run()
 			}
 		}
 		
-		if (shouldTriggerEveryXSeconds(5))
+		if (shouldTriggerEveryXSeconds(10))
 			serverMessage();
 		
 	}
