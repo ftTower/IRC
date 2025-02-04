@@ -44,8 +44,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			buf += commands[i] += " ";
 		writeToFile("output.csv", buf + "\n");
 		
-		std::cout << BLUE_TEXT << commands[0] << RESET << std::endl;
-		if (commands[0] != "PASS " && !client.getAuthenticated()) {
+		if (commands[0] != "PASS " && !client.getAuthenticated() && serv.getPassword() != "") {
 			send(fd, "462 :You may not register\r\n", 28, 0);
 			return ;
 		}
