@@ -46,6 +46,7 @@ class Server {
 		int	_Port;
 		int _SocketFd;
 		
+		bool		_pass;
 		std::string _password;
 		
 		static bool _Signal;
@@ -98,6 +99,7 @@ class Server {
 		int SocketFd() const;
 		std::vector<Channel> getChannelList();
 		std::string getPassword() const;
+		bool		getPass() const;
 		//!signal
 		static void SignalHandler(int signum);
 

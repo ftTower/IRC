@@ -15,12 +15,12 @@
 
 bool Server::_Signal = false; // init static variable
 
-Server::Server(char **argv) : _Port(atoi(argv[1])), _SocketFd(-1), clients(), channels()
+Server::Server(char **argv) : _Port(atoi(argv[1])), _SocketFd(-1), _pass(false), clients(), channels()
 {
-	if (!argv[2])
-		_password = "";
-	else
+	if (argv[2]) {
+		_pass = true;
 		_password = argv[2];
+	}
 }
 
 void Server::Init()
@@ -70,7 +70,7 @@ void Server::Run()
 			}
 		}
 		
-		if (shouldTriggerEveryXSeconds(1))
+		if (shouldTriggerEveryXSeconds(5))
 			serverMessage();
 		
 	}

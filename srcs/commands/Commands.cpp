@@ -117,25 +117,43 @@ void	version_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // Parameters: <password>
 void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void) serv;
-	(void) fd;
-	(void) cmd;
-	// Client& client = serv.findClientFd(fd);
-	//std::cout << "PASS CMD\n";
-	// if (cmd[1].empty()){
-	// 	ERR_NEEDMOREPARAMS
-	// }
-	// else if ()
-	if (cmd.size() < 2) {
-		throw std::runtime_error("Not enough parameters for PASS command");
-	}
-
-	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
-
-	if (serv.getPassword() == cmd[1])
-		serv.findClientFd(fd).setAuthenticated(true);
+	Client &client = serv.findClientFd(fd);
 	
+	if (!serv.getPass()) {
+		client.setAuthenticated(true);
+		return ; 
+	}
+	
+	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
+	
+    if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 * :Not enough parameters\r\n";
+		send(fd, msg.c_str(), msg.length(), 0);
+		return;
+	}
+	
+	if (client.getAuthenticated()) {
+		std::string msg = ":myserver 462 * :You may not reregister\r\n";
+		send(fd, msg.c_str(), msg.length(), 0);
+		return;
+	}
+	
+	if (cmd[1] != serv.getPassword()) {
+		std::string msg = ":myserver 464 * :Password incorrect\r\n";
+		
+		ssize_t sent = send(fd, msg.c_str(), msg.length(), 0);
+		if (sent == -1)
+			//perror("send error");
+	
+		usleep(100000);
+		
+		shutdown(fd, SHUT_WR);
+		serv.kickClient(fd);
+		return;
+	}
+    client.setAuthenticated(true);
 }
+
 
 // Parameters: <channel> <password>
 void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)

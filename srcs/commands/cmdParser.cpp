@@ -37,6 +37,9 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		Client &client = serv.findClientFd(fd);
 		client.addCmdToHistoric(cmd);
 	
+		
+		
+		
 		std::stringstream ss;
 		ss << fd;
 		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + client.nickName() + "\t";
@@ -44,9 +47,14 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			buf += commands[i] += " ";
 		writeToFile("output.csv", buf + "\n");
 		
-		if (commands[0] != "PASS " && !client.getAuthenticated() && serv.getPassword() != "") {
-			send(fd, "462 :You may not register\r\n", 28, 0);
-			return ;
+		
+		commands[0].erase(std::remove_if(commands[0].begin(), commands[0].end(), ::isspace), commands[0].end());
+		
+		std::cout << serv.getPass() << " " << !client.getAuthenticated() << " [" << commands[0] << "]\n";
+		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) {
+			std::string msg = ":myserver 462 * :You may not reregister 2\r\n";
+			send(fd, msg.c_str(), msg.length(), 0);
+			return;
 		}
 		
 		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
