@@ -126,18 +126,19 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	
+	//! verifie la size de la cmd
     if (cmd.size() < 2) {
 		std::string msg = ":myserver 461 * :Not enough parameters\r\n";
 		send(fd, msg.c_str(), msg.length(), 0);
 		return;
 	}
-	
+	//! verfie si le client nest pas deja authentifie
 	if (client.getAuthenticated()) {
 		std::string msg = ":myserver 462 * :You may not reregister\r\n";
 		send(fd, msg.c_str(), msg.length(), 0);
 		return;
 	}
-	
+	//! check le password
 	if (cmd[1] != serv.getPassword()) {
 		std::string msg = ":myserver 464 * :Password incorrect\r\n";
 		
@@ -190,8 +191,8 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
         throw std::runtime_error("Not enough parameters for PRIVMSG command");
     }
 
+	//! cherche les targets et les format
     Client &sender = serv.findClientFd(fd); 
-
     std::vector<std::string> targets = splitString(cmd[1], ',');
     for (size_t i = 0; i < targets.size(); ++i) {
         if (targets[i].empty()) {
@@ -203,15 +204,16 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
 		
     }
 
+	//! cherche le message a transmettre
     std::string message;
     for (size_t i = 2; i < cmd.size(); ++i) {
         message += cmd[i] + " ";
     }
-
     if (!message.empty() && message[message.size() - 1] == ' ') {
         message.erase(message.end() - 1);
     }
 
+	//!display des targets
     for (size_t i = 0; i < targets.size(); i++)
         std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
     std::cout << RED_BG << "Message: " << message << RESET << "\n";

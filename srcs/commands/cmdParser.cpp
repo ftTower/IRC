@@ -39,7 +39,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 	
 		
 		
-		
+		//! ecrit dans output
 		std::stringstream ss;
 		ss << fd;
 		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + client.nickName() + "\t";
@@ -48,8 +48,8 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		writeToFile("output.csv", buf + "\n");
 		
 		
+		//! verifie que le client a fourni un mdp valide si il y en a un
 		commands[0].erase(std::remove_if(commands[0].begin(), commands[0].end(), ::isspace), commands[0].end());
-		
 		std::cout << serv.getPass() << " " << !client.getAuthenticated() << " [" << commands[0] << "]\n";
 		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) {
 			std::string msg = ":myserver 462 * :You may not reregister 2\r\n";
@@ -57,6 +57,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			return;
 		}
 		
+		//! parser de commandes
 		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 		void (*foo[])(Server&,int,std::vector<std::string>) = {
 			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd

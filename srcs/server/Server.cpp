@@ -17,6 +17,7 @@ bool Server::_Signal = false; // init static variable
 
 Server::Server(char **argv) : _Port(atoi(argv[1])), _SocketFd(-1), _pass(false), clients(), channels()
 {
+	//! si il y a un argv 2 il y a un password
 	if (argv[2]) {
 		_pass = true;
 		_password = argv[2];
@@ -55,6 +56,7 @@ void Server::Run()
 	Init();
 	initMessage();
 
+	//! tant que le server est allume on accepte de la data ou des nouveaux clients
 	while (!Server::_Signal)
 	{
 		if ((poll(&fds[0], fds.size(), 100) == -1) && Server::_Signal == false)
@@ -69,8 +71,8 @@ void Server::Run()
 					ReceiveNewData(fds[i].fd);
 			}
 		}
-		
-		if (shouldTriggerEveryXSeconds(5))
+		//! affiche le message toute les x secondes
+		if (shouldTriggerEveryXSeconds(1))
 			serverMessage();
 		
 	}

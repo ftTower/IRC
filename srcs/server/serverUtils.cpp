@@ -19,19 +19,16 @@ void Server::sendMessage(std::vector<std::string> &target, const std::string &ms
 	if (target.empty())
 		return ;
 	
-	for (size_t i = 0; i < target.size(); i++) {
-		std::cout << target[i] << " ";
-	}
-	std::cout << "\n";
-
+	//! cherche dans les targets donnees si ils sont simple client ou channels
     for (size_t i = 0; i < target.size(); i++) {
 		
 		target[i].erase(std::remove_if(target[i].begin(), target[i].end(), ::isspace), target[i].end()); //enlever les whitesspaces superflux
 		
+		//? est ce un channel ? si oui, insertion des users du clients dans ma sending list
         if (!this->channels.empty() && target[i][0] == '#' && this->channelExist(target[i])) {
             std::vector<Client> buf = this->getChan(target[i]).getUsersList();
             sendList.insert(sendList.end(), buf.begin(), buf.end());
-        } else {
+		} else {	//? sinon je push le client
             try {
 				sendList.push_back(this->findClientNick(target[i]));	
 			} catch (std::exception &e) {
@@ -40,11 +37,11 @@ void Server::sendMessage(std::vector<std::string> &target, const std::string &ms
         }
     }
 
-    // Construire le message formaté
+    //! Construire le message formaté
     std::string formattedMsg = ":" + sender.nickName() + "!" + sender.nickName() + "@localhost PRIVMSG ";
 	formattedMsg += target[0] + " :" + msg + "\r\n";
 
-    // Envoyer le message à tous les destinataires
+    //! Envoyer le message à toutes la sendlist
     for (size_t i = 0; i < sendList.size(); i++) {
 		if (sendList[i] != sender) {
 			ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
