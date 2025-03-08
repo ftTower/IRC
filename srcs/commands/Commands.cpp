@@ -236,9 +236,9 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
     }
 
 	//!display des targets
-    for (size_t i = 0; i < targets.size(); i++)
-        std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
-    std::cout << RED_BG << "Message: " << message << RESET << "\n";
+    // for (size_t i = 0; i < targets.size(); i++)
+    //     std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
+    // std::cout << RED_BG << "Message: " << message << RESET << "\n";
 
     serv.sendMessage(targets, message, sender);
 }
