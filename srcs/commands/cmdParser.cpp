@@ -37,8 +37,6 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		Client &client = serv.findClientFd(fd);
 		client.addCmdToHistoric(cmd);
 	
-		
-		
 		//! ecrit dans output
 		std::stringstream ss;
 		ss << fd;

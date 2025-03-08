@@ -40,8 +40,8 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 // Parameters: <nickname>
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	if (cmd.size() < 2) {
-		throw std::runtime_error("Not enough parameters for NICK command");
+	if (cmd.size() != 2) {
+		throw std::runtime_error("Invalid number of parameters for NICK command");
 	}
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
@@ -52,10 +52,11 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	
 	std::string welcome = ":server 001 " + client.nickName() + " :Welcome to the IRC server\r\n";
 	
-	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0)
-		throw(std::runtime_error(std::string("failed to send : ") + client.nickName()));
+	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0) {
+		throw(std::runtime_error(std::string("failed to send welcome to ") + client.nickName()));
+	}
 	
-	serv.nickMessage(fd, client);
+	// serv.nickMessage(fd, client);
 	//serv.usersMessage(3, true);
 }
 
@@ -173,17 +174,42 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	//serv.channelMessage(3, true);
 }
 
-void	part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
+void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
-
+	//! a fix
+	
 	// Enleve le client d'un channel donne. L'utilisateur 
 	// recevra un message du serveur pour chaque channel
 	// dont il a ete enleve.
 
 	// Parameters: <channel>{,<channel>} [<reason>]
+
+	if (cmd.size() < 2) {
+		throw std::runtime_error("Not enough parameters for PART command");
+	}
+
+	Client &client = serv.findClientFd(fd);
+	std::vector<std::string> channels = splitString(cmd[1], ',');
+	std::string reason = cmd.size() > 2 ? cmd[2] : "Left channel";
+
+	for (size_t i = 0; i < channels.size(); ++i) {
+		channels[i].erase(std::remove_if(channels[i].begin(), channels[i].end(), ::isspace), channels[i].end());
+		
+		if (!serv.channelExist(channels[i])) {
+			//! Send error that channel doesn't exist
+			continue;
+		}
+
+		//! Remove client from channel
+		for(size_t i = 0; i < channels.size(); i++) {
+			serv.getChan(channels[i]).kickClient(fd);
+			client.removeChannelToList(channels[i]);
+		}
+
+		//! Send part message to channel
+		std::string partMsg = ":" + client.nickName() + " PART " + channels[i] + " :" + reason + "\r\n";
+		serv.sendMessage(channels, partMsg, client);
+	}
 }
 
 void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
@@ -235,14 +261,12 @@ void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
-
-	// Commande utilise pour mettre fin a la connexion du client
-	// sur le serveur
-
-	// Parameters: [<reason>]
+	std::string reason = cmd.size() > 1 ? cmd[1] : "Client disconnected";
+	std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected: " << reason << RESET << std::endl;
+	
+	serv.ClearClients(fd);
+	shutdown(fd, SHUT_RDWR);
+	close(fd);
 }
 
 void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)

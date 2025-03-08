@@ -197,6 +197,7 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 			std::cout << RED_BG << " T " << RESET;
 		std::cout 	<< " |  "
 					<< formatString(channels[channels.size() - 1 - i].getTopic(), 11)
+					<< " #" << channels[channels.size() - 1 - i].getUsersList().size()
 					<< std::endl;
 	}
 }
@@ -205,6 +206,6 @@ void	Server::serverMessage() {
 	std::cout << "\033c";
 	usersMessage(10, true);
 	channelMessage(10, false);
-	
+	std::cout << "\n\n";
 }
 

@@ -30,8 +30,9 @@ class Channel {
 		std::time_t getCreationTime(void);
 		
 		bool* getModes();
-		void addClient(Client &newClient);
-		
+		void  addClient(Client &newClient);
+		void  kickClient(int fd);
+
 		void	setModes(t_mode mode, bool toSet);
 		//~Channel();
 };

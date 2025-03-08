@@ -27,6 +27,15 @@ std::vector <Client> Channel::getUsersList() {
     return (this->users);
 }
 
+void  Channel::kickClient(int fd) {
+    for(std::vector<Client>::iterator it = users.begin(); it != users.end(); ++it) {
+        if (it->Fd() == fd) {
+            users.erase(it);
+            break;
+        }
+    }
+}
+
 
 std::string	Channel::getChanName(void){
     return(this->_name);

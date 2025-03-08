@@ -52,7 +52,9 @@ class Client
 	void		setNbPingUp();
 	void		addCmdToHistoric(const std::string &cmd);
 	void		addChannelToList(const std::string &c);
+	void		removeChannelToList(std::string &c);
 	void		setAuthenticated(bool toSet);
+	
 	//? getters
 	int 		Fd() const;
 	int			ServerSock() const;

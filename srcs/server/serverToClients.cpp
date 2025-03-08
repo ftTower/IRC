@@ -56,6 +56,13 @@ void Server::ClearClients(int fd)
 			clients.erase(clients.begin() + i);
 			break;
 		}
+
+	for (size_t i = 0; i < channels.size(); i++) {
+		for(size_t y = 0; y < channels[i].getUsersList().size(); y++) {
+			if (channels[i].getUsersList()[y].Fd() == fd)
+				channels[i].kickClient(fd);
+		}
+	}
 }
 
 // trouver un client dans le vector des clients via son fd

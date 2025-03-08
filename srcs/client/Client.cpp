@@ -58,6 +58,14 @@ void		Client::addChannelToList(const std::string &c) {
     channelsList.push_back(c);
 }
 
+void		Client::removeChannelToList(std::string &c) {
+    for(size_t i = 0; i < channelsList.size(); i++) {
+        if (channelsList[i] == c)
+            channelsList.erase(channelsList.begin() + i);
+    }
+}
+
+
 void		Client::setAuthenticated(bool toSet) {
     _authenticated = toSet;
 }
