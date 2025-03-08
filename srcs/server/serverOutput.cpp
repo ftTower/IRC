@@ -8,7 +8,7 @@
 void writeToFile(const std::string &filename, const std::string &content) {
     std::ofstream file;
     
-    // Ouvre le fichier en mode écriture (crée s'il n'existe pas, écrase sinon)
+    //! Ouvre le fichier en mode écriture (crée s'il n'existe pas, écrase sinon)
     file.open(filename.c_str(), std::ios::out | std::ios::app);
     
     if (!file) {
@@ -27,7 +27,6 @@ void	closingMessage() {
 	std::cout 	<< std::endl
 				<< getTimestamp()
 				<< RED_BG
-				<< BOLD_RED
 				<< "\tSERVER DOWN"
 				<< RESET
 				<< std::endl;
@@ -43,19 +42,6 @@ std::cout 	<< getTimestamp()
 			<< "\tSERVER  ON "
 			<< RESET
 			<< std::endl
-			//<< BOLD_MAGENTA
-			//<< "\t\tPort : " 
-			//<< RESET
-			//<< LIGHT_YELLOW
-			//<< this->Port()
-			//<< RESET
-			////<< std::endl
-			//<< BOLD_MAGENTA
-			//<< "\t\tSocket Fd : "
-			//<< RESET
-			//<< LIGHT_YELLOW
-			//<< this->SocketFd()
-			//<< RESET
 			<< std::endl
 			<< std::endl;
 			
@@ -93,6 +79,7 @@ void	Server::disconnectedMessage(int fd) {
 				<< std::endl;
 }
 
+//! formate une string a partir dune size
 std::string formatString(const std::string &string, size_t length) {
 	std::string ret = string;
 	if (ret.length() > length) 
@@ -103,6 +90,7 @@ std::string formatString(const std::string &string, size_t length) {
 	return (ret);
 }
 
+//! formate lhistoric des users pour lafficher joliment
 std::string formatHistoric(std::vector<std::string> historic, size_t length) {
 	std::string tmp;
 	
@@ -115,6 +103,7 @@ std::string formatHistoric(std::vector<std::string> historic, size_t length) {
 	return (formatString(tmp, length));
 }
 
+//! message server qui recap les users connecte 
 void	Server::usersMessage(size_t size, bool displayTime) {
     std::cout 	<< std::endl;
 	if (displayTime) {
@@ -149,6 +138,7 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 	std::cout << std::endl;
 }
 
+//! message server qui recap les channels
 void	Server::channelMessage(size_t size, bool displayTime) {
 	std::cout << std::endl;
 	if (displayTime) {
@@ -171,9 +161,7 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 		char buffer[32];
 		std::strftime(buffer, 32, "%Y-%m-%d %H:%M:%S", ptm);
 		
-		std::cout 	<< "\t\t"
-							//<< clients[clients.size() - 1 - i].Fd()
-							//<< " "
+		std::cout 			<< "\t\t"
 							<< formatString(channels[channels.size() - 1 - i].getChanName(), 15)
 							<< " | "
 							<< std::setw(19)
@@ -202,6 +190,7 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 	}
 }
 
+//! ensemble de la routine de message du serveur
 void	Server::serverMessage() {
 	std::cout << "\033c";
 	usersMessage(10, true);

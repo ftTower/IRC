@@ -27,14 +27,19 @@ SRCS = 	srcs/main.cpp \
 		$(SERVER)Server.cpp \
 		$(SERVER)serverToClients.cpp \
 		$(SERVER)serverToChannels.cpp \
-		$(SERVER)serverMessages.cpp \
+		$(SERVER)serverOutput.cpp \
 		$(SERVER)serverGetters.cpp \
+		$(SERVER)serverMethods.cpp \
 		$(SERVER)serverUtils.cpp \
 		$(CLIENT)Client.cpp \
+		$(CLIENT)clientSetters.cpp \
+		$(CLIENT)clientGetters.cpp \
+		$(CLIENT)clientMethods.cpp \
 		$(CHANNEL)Channel.cpp \
+		$(CHANNEL)channelGetters.cpp \
+		$(CHANNEL)channelMethods.cpp \
 		$(CMD)cmdParser.cpp \
 		$(CMD)Commands.cpp \
-		$(CMD)commandsMessages.cpp
 
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)%.o)
 INCLUDES = -I./includes

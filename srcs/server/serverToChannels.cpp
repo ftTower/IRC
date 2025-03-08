@@ -2,7 +2,7 @@
 
 #include "includes/Server.hpp"
 
-// verifier si le channel exist
+//! verifier si le channel exist
 bool Server::channelExist(std::string name)
 {
 	for (size_t i = 0; i < this->channels.size(); i++)
@@ -17,7 +17,7 @@ bool Server::channelExist(std::string name)
 	return false;
 }
 
-// get channel avec son nom
+//! get channel avec son nom
 Channel &Server::getChan(std::string name)
 {
 	for (size_t i = 0; i < this->channels.size(); i++)
@@ -30,12 +30,13 @@ Channel &Server::getChan(std::string name)
 	throw(std::runtime_error("Channel not found"));
 }
 
-// ajouter un channel au vector
+//! ajouter un channel au vecteur de serveur
 void Server::addChannel(Channel chan)
 {
 	this->channels.push_back(chan);
 }
 
+//! ajouter un client(fd) a un channel 
 void Server::addClientToChannel(int fd, std::string channel)
 {
 	try

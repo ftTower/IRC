@@ -16,7 +16,8 @@ int	main(int argc, char **argv)
 {
 	if (argc < 2 || argc > 3 )
 		return (1);
-	
+
+	//! ainsi escape code pour clear le terminal
 	std::cout << "\033c";
 	
 	Server S(argv);
@@ -24,6 +25,7 @@ int	main(int argc, char **argv)
 	{
 		signal(SIGINT, Server::SignalHandler);
 		signal(SIGQUIT, Server::SignalHandler);
+		//! lancement du serveur
 		S.Run();
 	}
 	catch (std::exception &e)

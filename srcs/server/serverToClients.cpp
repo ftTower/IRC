@@ -2,7 +2,7 @@
 
 #include "includes/Server.hpp"
 
-//accepter un client sur le serveur
+//!accepter un client sur le serveur
 void Server::AcceptNewClient()
 {
 	Client C(_SocketFd);
@@ -36,7 +36,7 @@ void Server::AcceptNewClient()
 	connectedMessage(incomingFd);
 }
 
-// deconnecter un client
+//! deconnecter un client
 void Server::kickClient(int fd)
 {
 	disconnectedMessage(fd);
@@ -44,7 +44,7 @@ void Server::kickClient(int fd)
 	close(fd);
 }
 
-// deconnecter tout les clients
+//! deconnecter tout les clients
 void Server::ClearClients(int fd)
 {
 	for (size_t i = 0; i < fds.size(); i++)
@@ -65,7 +65,7 @@ void Server::ClearClients(int fd)
 	}
 }
 
-// trouver un client dans le vector des clients via son fd
+// !trouver un client dans le vector des clients via son fd
 Client &Server::findClientFd(int fd)
 {
 	for (size_t i = 0; i < clients.size(); i++)
@@ -76,7 +76,7 @@ Client &Server::findClientFd(int fd)
 	throw std::runtime_error("Client not found");
 }
 
-// trouver un client dans le vector des clients via son nick
+//! trouver un client dans le vector des clients via son nick
 Client &Server::findClientNick(std::string nick)
 {
 	for (size_t i = 0; i < clients.size(); i++)
@@ -87,6 +87,8 @@ Client &Server::findClientNick(std::string nick)
 	}
 	throw std::runtime_error(nick);
 }
+
+//! est ce que le nick est utilise 
 bool Server::isNickUsed(std::string name, int fd)
 {
 	if (this->channelExist(name))

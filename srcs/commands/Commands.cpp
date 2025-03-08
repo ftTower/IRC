@@ -55,9 +55,6 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0) {
 		throw(std::runtime_error(std::string("failed to send welcome to ") + client.nickName()));
 	}
-	
-	// serv.nickMessage(fd, client);
-	//serv.usersMessage(3, true);
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -98,7 +95,6 @@ void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	const char *Pong = "PONG localhost\n";
 	if (send(fd, Pong, strlen(Pong), 0) < 0)
 		throw(std::runtime_error(std::string("failed to send : ") + cmd[0]));
-	serv.pongMessage(fd);
 	serv.findClientFd(fd).setNbPingUp();
 }
 

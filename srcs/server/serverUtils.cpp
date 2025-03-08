@@ -12,47 +12,6 @@
 
 #include "./includes/Server.hpp"
 
-// envoyer un message a un vecteur de target
-void Server::sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender) {
-    std::vector<Client> sendList;
-
-	if (target.empty())
-		return ;
-	
-	//! cherche dans les targets donnees si ils sont simple client ou channels
-    for (size_t i = 0; i < target.size(); i++) {
-		
-		target[i].erase(std::remove_if(target[i].begin(), target[i].end(), ::isspace), target[i].end()); //enlever les whitesspaces superflux
-		
-		//? est ce un channel ? si oui, insertion des users du clients dans ma sending list
-        if (!this->channels.empty() && target[i][0] == '#' && this->channelExist(target[i])) {
-            std::vector<Client> buf = this->getChan(target[i]).getUsersList();
-            sendList.insert(sendList.end(), buf.begin(), buf.end());
-		} else {	//? sinon je push le client
-            try {
-				sendList.push_back(this->findClientNick(target[i]));	
-			} catch (std::exception &e) {
-				std::cerr << "\t\t" << RED_BG << sender.nickName() << " sent to a unknown user named [" << e.what() << "] ?" << RESET <<  std::endl;
-			}
-        }
-    }
-
-    //! Construire le message formaté
-    std::string formattedMsg = ":" + sender.nickName() + "!" + sender.nickName() + "@localhost PRIVMSG ";
-	formattedMsg += target[0] + " :" + msg + "\r\n";
-
-    //! Envoyer le message à toutes la sendlist
-    for (size_t i = 0; i < sendList.size(); i++) {
-		if (sendList[i] != sender) {
-			ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
-			if (bytesSent < 0) {
-				std::cerr << "Failed to send message to client: " << sendList[i].Fd() << "\n";
-				kickClient(sendList[i].Fd());
-			}
-		}
-    }
-}
-
 //? a gerer plus tard - tower
 void	throwSocketOptionError(int socketOptionRet, std::string optionType)
 {

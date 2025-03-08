@@ -19,12 +19,10 @@
 #include "../../channel/includes/Channel.hpp"
 #include "../../commands/includes/Commands.hpp"
 
-
 #include <iostream>
 #include <algorithm>
 
 #include <vector>
-
 
 #include <errno.h>
 #include <stdexcept>
@@ -40,87 +38,77 @@
 
 #include <csignal>
 
-class Server {
-	
-	private :
-		int	_Port;
-		int _SocketFd;
-		
-		bool		_pass;
-		std::string _password;
-		
-		static bool _Signal;
+class Server
+{
 
-		std::vector<Client> clients;
-		std::vector<Channel> channels;
+private:
+	int _Port;
+	int _SocketFd;
 
-		std::vector<struct pollfd> fds;
+	bool _pass;
+	std::string _password;
 
-	public :
-		//! constructors
-		Server(char **argv);
+	static bool _Signal;
 
-		//! messages
-		void	closingMessage();
-		void	initMessage();
-		void	connectedMessage(int incomingFd);
-		void	disconnectedMessage(int fd);
-		
-		//? commands messages
-		void	cmdParseMessage(int fd, Server &serv, std::vector<std::string> commands);
-		void	nickMessage(int fd, const Client &client);
-		void	pongMessage(int fd);
-		//? routine messages
-		void	usersMessage(size_t size, bool displayTime);
-		void	channelMessage(size_t size, bool displayTime);
-		void	serverMessage();
-		
-		//! methods
-		void	Init();
-		void	Run();
-		
-		//! server handler
-		void	ReceiveNewData(int fd);
-		void	HandleNewData(int fd, std::string &Data);
-		void	HandleNick(int fd, const std::string &Data);
-		
-		void 	sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender);
+	std::vector<Client> clients;
+	std::vector<Channel> channels;
 
+	std::vector<struct pollfd> fds;
 
-		//! Client
-		void	AcceptNewClient();
-		void	kickClient(int fd);
-		void	PongClient(int fd);
-		void	addClientToChannel(int fd, std::string channel);
+public:
+	//! CONSTRUCTOR
+	Server(char **argv);
 
-		
-		//! getters
-		int	Port() const;
-		int SocketFd() const;
-		std::vector<Channel> getChannelList();
-		std::string getPassword() const;
-		bool		getPass() const;
-		//!signal
-		static void SignalHandler(int signum);
+	//! GETTERS
+	int Port() const;
+	int SocketFd() const;
+	std::vector<Channel> getChannelList();
+	std::string getPassword() const;
+	bool getPass() const;
 
-		//?cleaning
-		void	CloseFds();
-		void	ClearClients(int fd);
+	//! METHODS
+	void Init();
+	void Run();
 
+	//! CLIENTS
+	void AcceptNewClient();
+	void kickClient(int fd);
+	void PongClient(int fd);
+	void addClientToChannel(int fd, std::string channel);
 
-		//! utils
-		std::string remove(const std::string &Data, char c);
-		
-		//! Commands utils
-		Client &findClientFd(int fd);
-		Client &findClientNick(std::string nick);
-		bool	isNickUsed(std::string name, int fd);
-		bool	channelExist(std::string name);
-		Channel	&getChan(std::string name);
-		void	addChannel(Channel chan);
+	//! MESSAGES
+	void initMessage();
+	void connectedMessage(int incomingFd);
+	void disconnectedMessage(int fd);
 
+	//! ROUTINE MESSAGES
+	void usersMessage(size_t size, bool displayTime);
+	void channelMessage(size_t size, bool displayTime);
+	void serverMessage();
 
+	//! SERVER HANDLER
+	void ReceiveNewData(int fd);
+	void HandleNewData(int fd, std::string &Data);
+	void HandleNick(int fd, const std::string &Data);
+
+	void sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender);
+
+	//! SIGNAL
+	static void SignalHandler(int signum);
+
+	//! CLEANING
+	void CloseFds();
+	void ClearClients(int fd);
+
+	//! COMMANDS UTILS
+	Client &findClientFd(int fd);
+	Client &findClientNick(std::string nick);
+	bool isNickUsed(std::string name, int fd);
+	bool channelExist(std::string name);
+	Channel &getChan(std::string name);
+	void addChannel(Channel chan);
 };
+
 
 void writeToFile(const std::string &filename, const std::string &content);
 void throwSocketOptionError(int socketOptionRet, std::string optionType);
@@ -128,4 +116,4 @@ void throwSocketOptionError(int socketOptionRet, std::string optionType);
 std::string getTimestamp();
 bool shouldTriggerEveryXSeconds(int x);
 
-void	closingMessage();
+void closingMessage();

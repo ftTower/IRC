@@ -16,7 +16,7 @@
 void	handleCmds(Server &serv, int fd, char buff[1024])
 {
 	std::string strBuff(buff);
-	if (strBuff.find("\r\n") == std::string::npos)
+	if (strBuff.find("\r\n") == std::string::npos) //! si le buff ne contient pas \r\n la ligne nest pas finie
 		return ;
 	size_t pos = 0;
 	while ((pos = strBuff.find("\r\n")) != std::string::npos)
@@ -28,16 +28,15 @@ void	handleCmds(Server &serv, int fd, char buff[1024])
 
 void	parseCmd(Server &serv, int fd, std::string cmd)
 {
-	std::vector<std::string> commands = splitString(cmd, ' ');
+	std::vector<std::string> commands = splitString(cmd, ' '); //! separe la cmd recue en vecteur de mots
 	if (commands.empty())
 		return ;
-
 
 	try {
 		Client &client = serv.findClientFd(fd);
 		client.addCmdToHistoric(cmd);
 	
-		//! ecrit dans output
+		//! ecrit dans output.csv (debug)
 		std::stringstream ss;
 		ss << fd;
 		std::string buf = getTimestamp() + "\t\t\t" + ss.str() + "\t" + client.nickName() + "\t";
@@ -47,11 +46,11 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		
 		
 		//! verifie que le client a fourni un mdp valide si il y en a un
-		commands[0].erase(std::remove_if(commands[0].begin(), commands[0].end(), ::isspace), commands[0].end());
+		commands[0].erase(std::remove_if(commands[0].begin(), commands[0].end(), ::isspace), commands[0].end()); //? enleve les isspaces
 		std::cout << serv.getPass() << " " << !client.getAuthenticated() << " [" << commands[0] << "]\n";
-		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) {
+		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) { //? si mdp et client pas authentifie refuse
 			std::string msg = ":myserver 462 * :You may not reregister 2\r\n";
-			send(fd, msg.c_str(), msg.length(), 0);
+			send(fd, msg.c_str(), msg.length(), 0); //*rajouter la verification si send fail 
 			return;
 		}
 		
@@ -61,9 +60,9 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
 		};
 		for(size_t i = 0; i < sizeof(cmds)/sizeof(cmds[0]); i++)
-			if (cmd.find(cmds[i]) != std::string::npos) {
+			if (cmd.find(cmds[i]) != std::string::npos) { //? cherche si un des mots entree est une commande connue (sans if/else if/...)
 				try {
-					foo[i](serv,fd, commands);}
+					foo[i](serv,fd, commands);} //? utilise la fonction associes a i dans cmds
 				catch (std::exception &e) {
 					std::cerr << RED_BG << "ERROR CMD [" + cmd + "]" << RESET << " : " << e.what() << std::endl;
 				}

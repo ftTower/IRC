@@ -20,55 +20,52 @@
 
 class Client
 {
-  private:
+private:
 	std::string _nickName;
 	std::string _realName;
-  
-	int 		_fd;
-	int			_serverSock;
+
+	int _fd;
+	int _serverSock;
 	std::string _IPadd;
-	
-	bool	_authenticated;
-	
-	///? infos sur le clients
+
+	bool _authenticated;
+
+	//! infos sur le clients
 	unsigned long nbPing;
 	std::time_t connect_time;
 	std::vector<std::string> historic;
 	std::vector<std::string> channelsList;
 
-  public:
-	//!Base
+public:
+	//! Base
 	Client(int serverSock);
 	~Client();
 
 	bool operator!=(const Client &other) const;
-	
 
-	//? setters
-	void 		setFd(const int fd);
-	void 		setIPadd(const std::string &IPadd);
-	void		setNickname(std::string name);
-	void		setRealName(std::string name);
-	void		setNbPingUp();
-	void		addCmdToHistoric(const std::string &cmd);
-	void		addChannelToList(const std::string &c);
-	void		removeChannelToList(std::string &c);
-	void		setAuthenticated(bool toSet);
-	
-	//? getters
-	int 		Fd() const;
-	int			ServerSock() const;
+	//! setters
+	void setFd(const int fd);
+	void setIPadd(const std::string &IPadd);
+	void setNickname(std::string name);
+	void setRealName(std::string name);
+	void setNbPingUp();
+	void addCmdToHistoric(const std::string &cmd);
+	void addChannelToList(const std::string &c);
+	void removeChannelToList(std::string &c);
+	void setAuthenticated(bool toSet);
+
+	//! getters
+	int Fd() const;
+	int ServerSock() const;
 	std::string IPadd() const;
 	std::string nickName() const;
 	std::string realName() const;
-	size_t  	getNbPing() const;
+	size_t getNbPing() const;
 	std::time_t getConnectTime() const;
 	std::vector<std::string> getHistoric() const;
 	std::vector<std::string> getChannelList() const;
-	bool		getAuthenticated() const;
-	
+	bool getAuthenticated() const;
 
 	// listen
-	void	ReceiveMessage();
-
+	void ReceiveMessage();
 };
