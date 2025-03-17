@@ -282,7 +282,7 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
 	
-	Channel buf = serv.getChan(cmd[1]);
+	Channel &buf = serv.getChan(cmd[1]);
 	
 	bool toSet;
 	 
@@ -312,6 +312,75 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 			buf.setModes(MODE_OP, toSet);
 	}
 }
+
+// void mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
+// {
+// 	if (cmd.size() < 3) {
+// 		serv.addError("Not enough parameters for MODE command from " + serv.findClientFd(fd).nickName());
+// 		throw std::runtime_error("Not enough parameters for MODE command from " + serv.findClientFd(fd).nickName());
+// 	}
+
+// 	// Vérifier si le canal existe
+// 	if (!serv.channelExists(cmd[1])) {
+// 		serv.addError("Channel " + cmd[1] + " does not exist.");
+// 		throw std::runtime_error("Channel " + cmd[1] + " does not exist.");
+// 	}
+
+// 	Channel &buf = serv.getChan(cmd[1]);
+
+// 	// Vérifier si l'utilisateur est dans le canal
+// 	Client &client = serv.findClientFd(fd);
+// 	if (!buf.isClientInChannel(client)) {
+// 		serv.addError("User " + client.nickName() + " is not in channel " + cmd[1]);
+// 		throw std::runtime_error("User " + client.nickName() + " is not in channel " + cmd[1]);
+// 	}
+
+// 	// Vérifier le format du mode (+ ou - en premier caractère)
+// 	bool toSet;
+// 	if (cmd[2].empty() || (cmd[2][0] != '+' && cmd[2][0] != '-')) {
+// 		serv.addError("Invalid mode format from " + client.nickName());
+// 		throw std::runtime_error("Invalid mode format from " + client.nickName());
+// 	}
+// 	toSet = (cmd[2][0] == '+');
+
+// 	// Vérifier si l'utilisateur est opérateur avant de modifier certains modes
+// 	if (!buf.isOperator(client)) {
+// 		serv.addError("User " + client.nickName() + " is not a channel operator.");
+// 		throw std::runtime_error("User " + client.nickName() + " is not a channel operator.");
+// 	}
+
+// 	size_t argIndex = 3;
+// 	for (size_t i = 1; i < cmd[2].size(); ++i) {
+// 		switch (cmd[2][i]) {
+// 			case 'i': // Mode invitation-only
+// 				buf.setModes(MODE_INVITE, toSet);
+// 				break;
+// 			case 't': // Mode topic restreint
+// 				buf.setModes(MODE_TOPIC, toSet);
+// 				break;
+// 			case 'k': // Mode mot de passe (nécessite un argument)
+// 				if (argIndex >= cmd.size()) {
+// 					serv.addError("Missing argument for mode 'k'.");
+// 					throw std::runtime_error("Missing argument for mode 'k'.");
+// 				}
+// 				buf.setKey(toSet ? cmd[argIndex] : "");
+// 				argIndex++;
+// 				break;
+// 			case 'o': // Mode opérateur (nécessite un argument)
+// 				if (argIndex >= cmd.size()) {
+// 					serv.addError("Missing argument for mode 'o'.");
+// 					throw std::runtime_error("Missing argument for mode 'o'.");
+// 				}
+// 				buf.setOperator(cmd[argIndex], toSet);
+// 				argIndex++;
+// 				break;
+// 			default:
+// 				serv.addError("Unknown mode '" + std::string(1, cmd[2][i]) + "' from " + client.nickName());
+// 				throw std::runtime_error("Unknown mode '" + std::string(1, cmd[2][i]) + "' from " + client.nickName());
+// 		}
+// 	}
+// }
+
 
 void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
