@@ -50,7 +50,9 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		std::cout << serv.getPass() << " " << !client.getAuthenticated() << " [" << commands[0] << "]\n";
 		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) { //? si mdp et client pas authentifie refuse
 			std::string msg = ":myserver 462 * :You may not reregister 2\r\n";
-			serv.addError(msg);
+			std::stringstream ss;
+			ss << fd;
+			serv.addError(ss.str() + " is trying to " + commands[0] + " without registration");
 			send(fd, msg.c_str(), msg.length(), 0); //*rajouter la verification si send fail 
 			return;
 		}
