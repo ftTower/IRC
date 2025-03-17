@@ -277,35 +277,40 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// d'une target donne.
 
 	// Parameters: <target> [<modestring> [<mode arguments>...]]
-	//if (cmd.size() < 3) {
-	//	throw std::runtime_error("Not enough parameters for MODE command");
-	//}
+	if (cmd.size() < 3) {
+		serv.addError("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
+		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
+	}
 	
-	//Channel buf = serv.getChan(cmd[1]);
+	Client buf = serv.findClientNick(cmd[1]);
 	
-	//bool toSet;
+	bool toSet;
 	 
-	//if (cmd[2].empty())
-	//	throw std::runtime_error("Invalid argument for MODE command");
-	//else if (cmd[2][0] == '+')
-	//	toSet = true;
-	//else if (cmd[2][0] == '-')
-	//	toSet = false;
-	//else 
-	//	throw std::runtime_error("Invalid argument for MODE command");
+	if (cmd[2].empty()) {
+		serv.addError("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
+		throw std::runtime_error("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
+	}
+	else if (cmd[2][0] == '+')
+		toSet = true;
+	else if (cmd[2][0] == '-')
+		toSet = false;
+	else  {
+		serv.addError("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
+		throw std::runtime_error("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
+	}
 		
-	//for (size_t i = 2; i < cmd.size(); ++i) {
-	//	if (cmd[i].empty() || cmd[i].size() < 2)
-	//		break ;
-	//	else if (cmd[i][1] == 'I') 
-	//		buf.setModes(MODE_INVITE, toSet);
-	//	else if (cmd[i][1] == 'T') 
-	//		buf.setModes(MODE_TOPIC, toSet);
-	//	else if (cmd[i][1] == 'K') 
-	//		buf.setModes(MODE_KEY, toSet);
-	//	else if (cmd[i][1] == 'O') 
-	//		buf.setModes(MODE_OP, toSet);
-	//}
+	for (size_t i = 2; i < cmd.size(); ++i) {
+		if (cmd[i].empty() || cmd[i].size() < 2)
+			break ;
+		else if (cmd[i][1] == 'i') 
+			buf.setModes(MODE_INVITE, toSet);
+		else if (cmd[i][1] == 't') 
+			buf.setModes(MODE_TOPIC, toSet);
+		else if (cmd[i][1] == 'k') 
+			buf.setModes(MODE_KEY, toSet);
+		else if (cmd[i][1] == 'o') 
+			buf.setModes(MODE_OP, toSet);
+	}
 }
 
 void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)

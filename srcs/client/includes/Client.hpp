@@ -18,6 +18,14 @@
 #include <vector>
 #include <limits>
 
+typedef enum e_mode
+{
+	MODE_INVITE,
+	MODE_TOPIC,
+	MODE_KEY,
+	MODE_OP,
+} t_mode;
+
 class Client
 {
 	private:
@@ -31,6 +39,8 @@ class Client
 		bool _authenticated;
 
 		//! infos sur le clients
+		bool modes[4];
+
 		unsigned long nbPing;
 		std::time_t connect_time;
 		std::vector<std::string> historic;
@@ -53,8 +63,10 @@ class Client
 		void addChannelToList(const std::string &c);
 		void removeChannelToList(std::string &c);
 		void setAuthenticated(bool toSet);
+		void setModes(t_mode mode, bool toSet);
 
 		//! getters
+		bool *getModes();
 		int Fd() const;
 		int ServerSock() const;
 		std::string IPadd() const;

@@ -93,7 +93,7 @@ class Server
 		void HandleNewData(int fd, std::string &Data);
 		void HandleNick(int fd, const std::string &Data);
 
-		void sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender);
+		void sendMessage(std::vector<std::string> &target, const std::string &msg, Client &sender);
 
 		//! SIGNAL
 		static void SignalHandler(int signum);

@@ -39,3 +39,7 @@ std::vector<std::string> Client::getChannelList() const {
 bool		Client::getAuthenticated() const {
     return (this->_authenticated);
 }
+
+bool* Client::getModes() {
+    return (this->modes);
+}

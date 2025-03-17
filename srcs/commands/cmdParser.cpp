@@ -67,6 +67,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 				try {
 					foo[i](serv,fd, commands);} //? utilise la fonction associes a i dans cmds
 				catch (std::exception &e) {
+					serv.addError("Error in " + cmd + " :" + e.what());
 					std::cerr << RED_BG << "ERROR CMD [" + cmd + "]" << RESET << " : " << e.what() << std::endl;
 				}
 				return;

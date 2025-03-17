@@ -17,48 +17,67 @@ void Server::ReceiveNewData(int fd)
 	}
 }
 
-//! envoyer un message a un vecteur de target
-void Server::sendMessage(std::vector<std::string> &target, const std::string &msg, const Client &sender) {
+void Server::sendMessage(std::vector<std::string> &targets, const std::string &msg,  Client &sender) {
+    if (targets.empty()) {
+        return;  //! Aucune cible, rien à faire.
+    }
+
     std::vector<Client> sendList;
 
-	if (target.empty())
-		return ;
-	
-	//? cherche dans les targets donnees si ils sont simple client ou channels
-    for (size_t i = 0; i < target.size(); i++) {
-		
-		target[i].erase(std::remove_if(target[i].begin(), target[i].end(), ::isspace), target[i].end()); //enlever les whitesspaces superflux
-		
-		//? est ce un channel ? si oui, insertion des users du clients dans ma sending list
-        if (!this->channels.empty() && target[i][0] == '#' && this->channelExist(target[i])) {
-            std::vector<Client> buf = this->getChan(target[i]).getUsersList();
-            sendList.insert(sendList.end(), buf.begin(), buf.end());
-		} else {	//? sinon je push le client
+    //! Parcours des cibles et traitement de chaque cible
+    for (size_t i = 0; i < targets.size(); ++i) {
+        std::string trimmedTarget = targets[i];
+        trimmedTarget.erase(std::remove_if(trimmedTarget.begin(), trimmedTarget.end(), ::isspace), trimmedTarget.end()); // Enlever les espaces superflus
+
+        //! Vérifier si c'est un canal
+        if (trimmedTarget[0] == '#' && this->channelExist(trimmedTarget)) {
+            //! Si c'est un canal, ajouter tous les utilisateurs de ce canal à la sendList
+
+
+			//! permet dajouter lutilisateur apres avoir envoye un message dans un chan dont il ne fait pas parti
+			// for (size_t i = 0; i <= getChan(trimmedTarget).getUsersList().size(); i++) {
+			// 	if (getChan(trimmedTarget).getUsersList()[i].Fd() == sender.Fd())
+			// 		break ;
+			// 	else if (i == getChan(trimmedTarget).getUsersList().size()) {
+			// 		getChan(trimmedTarget).addClient(sender);
+			// 		break;
+			// 	}
+			// }
+
+            std::vector<Client> channelUsers = this->getChan(trimmedTarget).getUsersList();
+            sendList.insert(sendList.end(), channelUsers.begin(), channelUsers.end());
+        } else {
+            //! Sinon, essayer de trouver le client avec ce pseudo
             try {
-				sendList.push_back(this->findClientNick(target[i]));	
-			} catch (std::exception &e) {
-				addError(sender.nickName() + " tried to sent to a unknown user named [" + e.what() + "]");
-				std::cerr << "\t\t" << RED_BG << sender.nickName() << " tried to sent to a unknown user named [" << e.what() << "]" << RESET <<  std::endl;
-			}
+                sendList.push_back(this->findClientNick(trimmedTarget));
+            } catch (std::exception &e) {
+                //! En cas d'erreur (client introuvable), envoyer un numeric reply 401
+                std::string errorMsg = "No such nick/channel: " + trimmedTarget;
+                std::string numericReply = ":" + std::string("localhost") + " 401 " + sender.nickName() + " " + trimmedTarget + " :" + errorMsg + "\r\n";
+                send(sender.Fd(), numericReply.c_str(), numericReply.size(), 0);  // Envoie de la numeric reply au client
+                std::cerr << "\t\t" << RED_BG << sender.nickName() << " tried to send to a non-existent user or channel: [" << trimmedTarget << "]" << RESET << std::endl;
+            }
         }
     }
 
-    //? Construire le message formaté
+    //! Construire le message formaté
     std::string formattedMsg = ":" + sender.nickName() + "!" + sender.nickName() + "@localhost PRIVMSG ";
-	formattedMsg += target[0] + " :" + msg + "\r\n";
+    formattedMsg += targets[0] + " :" + msg + "\r\n";  // On envoie à la première cible dans le message
 
-    //? Envoyer le message à toutes la sendlist
-    for (size_t i = 0; i < sendList.size(); i++) {
-		if (sendList[i] != sender) {
-			ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
-			if (bytesSent < 0) {
-				std::cerr << sender.nickName() + " failed to send message to client named " + sendList[i].nickName() << "\n";
-				addError(sender.nickName() + " failed to send message to client named " + sendList[i].nickName());
-				kickClient(sendList[i].Fd());
-			}
-		}
+    //! Envoi du message à chaque client dans la sendList
+    for (size_t i = 0; i < sendList.size(); ++i) {
+        if (sendList[i] != sender) {  //! Ne pas envoyer à l'expéditeur
+            ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
+            if (bytesSent < 0) {
+                std::cerr << sender.nickName() + " failed to send message to client " + sendList[i].nickName() << "\n";
+                addError(sender.nickName() + " failed to send message to client " + sendList[i].nickName());
+                kickClient(sendList[i].Fd());  //! Optionnel gérer un échec d'envoi (ici kick le client)
+            }
+        }
     }
 }
+
+
 
 void Server::Init()
 {

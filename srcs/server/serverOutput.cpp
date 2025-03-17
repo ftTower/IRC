@@ -112,7 +112,7 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 					<< RESET;
 	}
 	std::cout 	<< CYAN_BG
-				<< "\tUSERS CONNECTED |   CONNECTION TIME   | PONG COUNTER |   LAST COMMANDS     "  
+				<< "\tUSERS CONNECTED |   CONNECTION TIME   |     MODES    |   LAST COMMANDS     "  
 				<< RESET
 				<< std::endl;
 	for(size_t i = 0; i < clients.size() && i < size; i++) {
@@ -123,16 +123,30 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 		std::strftime(buffer, 32, "%Y-%m-%d %H:%M:%S", ptm);
 
 		
-		std::cout 	<< "\t\t"
-							//<< clients[clients.size() - 1 - i].Fd()
-							//<< " "
+		std::cout 			<< "\t\t"
 							<< formatString(clients[clients.size() - 1 - i].nickName(), 15)
 							<< " | "
 							<< buffer
-							<< " | "
-							<< std::setw(11) << clients[clients.size() - 1 - i].getNbPing()
-							<< "  |  "
+							<< " | ";
+							if (this->clients[i].getModes()[MODE_INVITE])
+									std::cout << GREEN_BG << " I " << RESET;
+								else 						
+									std::cout << RED_BG << " I " << RESET;
+								if (this->clients[i].getModes()[MODE_KEY])
+									std::cout << GREEN_BG << " K " << RESET;
+								else 						
+									std::cout << RED_BG << " K " << RESET;
+								if (this->clients[i].getModes()[MODE_OP])
+									std::cout << GREEN_BG << " O " << RESET;
+								else 						
+									std::cout << RED_BG << " O " << RESET;
+								if (this->clients[i].getModes()[MODE_TOPIC])
+									std::cout << GREEN_BG << " T " << RESET;
+								else 						
+									std::cout << RED_BG << " T " << RESET;
+		std::cout			<< " |  "
 							<< formatHistoric(clients[clients.size() - 1 - i].getHistoric(), 18)
+							<< std::setw(5) << clients[clients.size() - 1 - i].getNbPing()
 							<< std::endl;
 	}
 	std::cout << std::endl;
@@ -150,7 +164,7 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 	else
 		std::cout << "\t";
 	std::cout	<< YELLOW_BG
-				<< "\t     CHANNELS   |    CREATION TIME    |     MODES    |        TOPICS       "  
+				<< "\t     CHANNELS   |    CREATION TIME    |     USERS    |   TOPICS            "  
 				<< RESET
 				<< std::endl;
 	
@@ -165,27 +179,13 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 							<< formatString(channels[channels.size() - 1 - i].getChanName(), 15)
 							<< " | "
 							<< std::setw(19)
-							<< buffer
-							<< " | ";
-		if (this->channels[i].getModes()[MODE_INVITE])
-			std::cout << GREEN_BG << " I " << RESET;
-		else 						
-			std::cout << RED_BG << " I " << RESET;
-		if (this->channels[i].getModes()[MODE_KEY])
-			std::cout << GREEN_BG << " K " << RESET;
-		else 						
-			std::cout << RED_BG << " K " << RESET;
-		if (this->channels[i].getModes()[MODE_OP])
-			std::cout << GREEN_BG << " O " << RESET;
-		else 						
-			std::cout << RED_BG << " O " << RESET;
-		if (this->channels[i].getModes()[MODE_TOPIC])
-			std::cout << GREEN_BG << " T " << RESET;
-		else 						
-			std::cout << RED_BG << " T " << RESET;
+							<< buffer;
+							// << " | ";
+		
 		std::cout 	<< " |  "
+					<< std::setw(11) << channels[channels.size() - 1 - i].getUsersList().size()
+					<< " |  "
 					<< formatString(channels[channels.size() - 1 - i].getTopic(), 11)
-					<< " #" << channels[channels.size() - 1 - i].getUsersList().size()
 					<< std::endl;
 	}
 }
@@ -195,7 +195,10 @@ void Server::errorMessage(size_t size) {
 		return ;
 	std::cout << std::endl << std::endl << RED_BG << "\t\tLast errors :" << RESET << std::endl;
 	for (size_t i = 0; i < errors.size() && i < size; i++) {
-		std::cout << "\t\t\t" << errors[i] << std::endl;
+		if (errors[i].find("\n\r") && size > 3)
+			std::cout << "\t\t\t" << errors[i].substr(0, errors[i].find("\n\r")) << std::endl;
+		else
+			std::cout << "\t\t\t" << errors[i] << std::endl;
 	}
 }
 
