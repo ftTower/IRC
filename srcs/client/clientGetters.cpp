@@ -40,6 +40,3 @@ bool		Client::getAuthenticated() const {
     return (this->_authenticated);
 }
 
-bool* Client::getModes() {
-    return (this->modes);
-}

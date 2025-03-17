@@ -15,8 +15,7 @@
 //!Base
 
 Client::Client(int serverSock) : _nickName("default") , _fd(-1) , _serverSock(serverSock), _authenticated(false), nbPing(0), connect_time(std::time(0)) {
-    for(size_t i = 0; i < 4; i++)
-        modes[i] = false;
+    
 }
 
 Client::~Client() {}

@@ -16,6 +16,7 @@ private:
 	std::vector<Client> users;
 
 	std::time_t creationTime;
+	bool modes[4];
 
 public:
 	//! Base
@@ -26,8 +27,10 @@ public:
 	std::string getTopic(void);
 	std::vector<Client> getUsersList(void);
 	std::time_t getCreationTime(void);
+	bool *getModes();
 
 	//! setters
+	void setModes(t_mode mode, bool toSet);
 
 	//! methods
 	void addClient(Client &newClient);

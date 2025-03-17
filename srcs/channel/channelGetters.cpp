@@ -14,8 +14,10 @@ std::string Channel::getTopic(void) {
     return (this->topic);
 }
 
-
-
 std::time_t Channel::getCreationTime(void) {
     return(this->creationTime);
+}
+
+bool* Channel::getModes() {
+    return (this->modes);
 }

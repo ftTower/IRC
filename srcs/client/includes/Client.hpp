@@ -39,7 +39,6 @@ class Client
 		bool _authenticated;
 
 		//! infos sur le clients
-		bool modes[4];
 
 		unsigned long nbPing;
 		std::time_t connect_time;
@@ -63,10 +62,8 @@ class Client
 		void addChannelToList(const std::string &c);
 		void removeChannelToList(std::string &c);
 		void setAuthenticated(bool toSet);
-		void setModes(t_mode mode, bool toSet);
 
 		//! getters
-		bool *getModes();
 		int Fd() const;
 		int ServerSock() const;
 		std::string IPadd() const;

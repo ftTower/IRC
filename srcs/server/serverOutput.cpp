@@ -128,19 +128,19 @@ void	Server::usersMessage(size_t size, bool displayTime) {
 							<< " | "
 							<< buffer
 							<< " | ";
-							if (this->clients[i].getModes()[MODE_INVITE])
+							if (this->channels[i].getModes()[MODE_INVITE])
 									std::cout << GREEN_BG << " I " << RESET;
 								else 						
 									std::cout << RED_BG << " I " << RESET;
-								if (this->clients[i].getModes()[MODE_KEY])
+								if (this->channels[i].getModes()[MODE_KEY])
 									std::cout << GREEN_BG << " K " << RESET;
 								else 						
 									std::cout << RED_BG << " K " << RESET;
-								if (this->clients[i].getModes()[MODE_OP])
+								if (this->channels[i].getModes()[MODE_OP])
 									std::cout << GREEN_BG << " O " << RESET;
 								else 						
 									std::cout << RED_BG << " O " << RESET;
-								if (this->clients[i].getModes()[MODE_TOPIC])
+								if (this->channels[i].getModes()[MODE_TOPIC])
 									std::cout << GREEN_BG << " T " << RESET;
 								else 						
 									std::cout << RED_BG << " T " << RESET;

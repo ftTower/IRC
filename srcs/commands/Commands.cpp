@@ -282,7 +282,7 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
 	
-	Client buf = serv.findClientNick(cmd[1]);
+	Channel buf = serv.getChan(cmd[1]);
 	
 	bool toSet;
 	 
