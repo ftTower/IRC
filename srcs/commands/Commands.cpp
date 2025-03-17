@@ -41,18 +41,18 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	if (cmd.size() != 2) {
+		serv.addError(std::string("Invalid number of parameters for NICK command from ") + serv.findClientFd(fd).nickName());
 		throw std::runtime_error("Invalid number of parameters for NICK command");
 	}
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
 
 	handleClientName(serv, client, nickname);
-	
-	std::cout << "[" << client.nickName() << "]\n"; 
-	
+		
 	std::string welcome = ":server 001 " + client.nickName() + " :Welcome to the IRC server\r\n";
 	
 	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0) {
+		serv.addError(std::string("failed to send welcome to ") + client.nickName());
 		throw(std::runtime_error(std::string("failed to send welcome to ") + client.nickName()));
 	}
 }
@@ -91,10 +91,12 @@ void	pong_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 	// Parameters: [<server>] <token>
 	(void)serv;
-
+	(void)cmd;
 	const char *Pong = "PONG localhost\n";
-	if (send(fd, Pong, strlen(Pong), 0) < 0)
-		throw(std::runtime_error(std::string("failed to send : ") + cmd[0]));
+	if (send(fd, Pong, strlen(Pong), 0) < 0) {
+		serv.addError(std::string("failed to pong ") + serv.findClientFd(fd).nickName());
+		throw(std::runtime_error(std::string("failed to pong ") + serv.findClientFd(fd).nickName()));
+	}
 	serv.findClientFd(fd).setNbPingUp();
 }
 
@@ -159,8 +161,10 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	(void)fd;
 	// Channel& chan = serv.getChan(cmd[1]);
 	// est-ce que le channel existe ?
-	if (cmd.size() < 2)
+	if (cmd.size() < 2) {
+		serv.addError("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName());
 		throw(std::runtime_error("Not enough parameters for JOIN command"));
+	}
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	if (!serv.channelExist(cmd[1])){
 		serv.addChannel(Channel(cmd[1]));
@@ -181,6 +185,7 @@ void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Parameters: <channel>{,<channel>} [<reason>]
 
 	if (cmd.size() < 2) {
+		serv.addError("Not enough parameters for PART command from " + serv.findClientFd(fd).nickName());
 		throw std::runtime_error("Not enough parameters for PART command");
 	}
 
@@ -192,6 +197,7 @@ void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		channels[i].erase(std::remove_if(channels[i].begin(), channels[i].end(), ::isspace), channels[i].end());
 		
 		if (!serv.channelExist(channels[i])) {
+			serv.addError("Channel doesn't exist from " + serv.findClientFd(fd).nickName());
 			//! Send error that channel doesn't exist
 			continue;
 		}
@@ -210,6 +216,7 @@ void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
     if (cmd.size() < 3) {
+		serv.addError("Not enough parameters for PRIVMSG command from " + serv.findClientFd(fd).nickName());
         throw std::runtime_error("Not enough parameters for PRIVMSG command");
     }
 
@@ -219,9 +226,9 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
     for (size_t i = 0; i < targets.size(); ++i) {
         if (targets[i].empty()) {
             std::cerr << "Cible invalide détectée." << std::endl;
-            return;
+            serv.addError("Cible invalide détectée.");
+			return;
         }
-		//else if (serv.findClientNick(targets[i]))
 		targets[i].erase(std::remove_if(targets[i].begin(), targets[i].end(), ::isspace), targets[i].end());
 		
     }
@@ -234,11 +241,6 @@ void privmsg_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
     if (!message.empty() && message[message.size() - 1] == ' ') {
         message.erase(message.end() - 1);
     }
-
-	//!display des targets
-    // for (size_t i = 0; i < targets.size(); i++)
-    //     std::cout << GREEN_BG << "Target: " << targets[i] << RESET;
-    // std::cout << RED_BG << "Message: " << message << RESET << "\n";
 
     serv.sendMessage(targets, message, sender);
 }

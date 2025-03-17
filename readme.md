@@ -9,3 +9,14 @@ Dynamic or private ports (49152 to 65535) are used by client applications for ou
 ////////
 irssi
 /connect localhost 6667
+
+NetCat : 
+
+apres make pass 
+```bash
+echo -ne "PASS mdp\r\nNICK monPseudo\r\nUSER monPseudo 0 * :Mon Nom\r\n" | nc localhost 6667
+```
+apres make run
+```bash 
+echo -ne "NICK monPseudo\r\nUSER monPseudo 0 * :Mon Nom\r\n" | nc localhost 6667
+```

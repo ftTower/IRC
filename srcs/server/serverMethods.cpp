@@ -37,7 +37,8 @@ void Server::sendMessage(std::vector<std::string> &target, const std::string &ms
             try {
 				sendList.push_back(this->findClientNick(target[i]));	
 			} catch (std::exception &e) {
-				std::cerr << "\t\t" << RED_BG << sender.nickName() << " sent to a unknown user named [" << e.what() << "] ?" << RESET <<  std::endl;
+				addError(sender.nickName() + " tried to sent to a unknown user named [" + e.what() + "]");
+				std::cerr << "\t\t" << RED_BG << sender.nickName() << " tried to sent to a unknown user named [" << e.what() << "]" << RESET <<  std::endl;
 			}
         }
     }
@@ -51,7 +52,8 @@ void Server::sendMessage(std::vector<std::string> &target, const std::string &ms
 		if (sendList[i] != sender) {
 			ssize_t bytesSent = send(sendList[i].Fd(), formattedMsg.c_str(), formattedMsg.size(), 0);
 			if (bytesSent < 0) {
-				std::cerr << "Failed to send message to client: " << sendList[i].Fd() << "\n";
+				std::cerr << sender.nickName() + " failed to send message to client named " + sendList[i].nickName() << "\n";
+				addError(sender.nickName() + " failed to send message to client named " + sendList[i].nickName());
 				kickClient(sendList[i].Fd());
 			}
 		}
@@ -93,8 +95,9 @@ void Server::Run()
 	//! tant que le server est allume on accepte de la data ou des nouveaux clients
 	while (!Server::_Signal)
 	{
-		if ((poll(&fds[0], fds.size(), 100) == -1) && Server::_Signal == false)
+		if ((poll(&fds[0], fds.size(), 100) == -1) && Server::_Signal == false) {
 			throw(std::runtime_error(ERR_POLL_FAIL));
+		}
 		for (size_t i = 0; i < fds.size(); i++)
 		{
 			if (fds[i].revents & POLLIN)

@@ -52,6 +52,7 @@ private:
 
 	std::vector<Client> clients;
 	std::vector<Channel> channels;
+	std::vector<std::string> errors;
 
 	std::vector<struct pollfd> fds;
 
@@ -84,6 +85,7 @@ public:
 	//! ROUTINE MESSAGES
 	void usersMessage(size_t size, bool displayTime);
 	void channelMessage(size_t size, bool displayTime);
+	void errorMessage(size_t size);
 	void serverMessage();
 
 	//! SERVER HANDLER
@@ -107,6 +109,7 @@ public:
 	bool channelExist(std::string name);
 	Channel &getChan(std::string name);
 	void addChannel(Channel chan);
+	void addError(std::string error);
 };
 
 

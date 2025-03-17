@@ -190,11 +190,21 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 	}
 }
 
+void Server::errorMessage(size_t size) {
+	if (errors.empty())
+		return ;
+	std::cout << std::endl << std::endl << RED_BG << "\t\tLast errors :" << RESET << std::endl;
+	for (size_t i = 0; i < errors.size() && i < size; i++) {
+		std::cout << "\t\t\t" << errors[i] << std::endl;
+	}
+}
+
 //! ensemble de la routine de message du serveur
 void	Server::serverMessage() {
 	std::cout << "\033c";
 	usersMessage(10, true);
 	channelMessage(10, false);
+	errorMessage(5);
 	std::cout << "\n\n";
 }
 

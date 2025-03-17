@@ -69,6 +69,11 @@ void Server::CloseFds()
 	}
 }
 
+//! error
+void Server::addError(std::string error) {
+	errors.push_back(error);
+}
+
 //! time
 #include <iostream>
 #include <ctime>
