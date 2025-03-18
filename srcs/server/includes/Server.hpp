@@ -118,5 +118,6 @@ void throwSocketOptionError(int socketOptionRet, std::string optionType);
 
 std::string getTimestamp();
 bool shouldTriggerEveryXSeconds(int x);
+void Send(int fd, std::string reply);
 
 void closingMessage();

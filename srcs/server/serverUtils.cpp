@@ -95,3 +95,11 @@ bool shouldTriggerEveryXSeconds(int x) {
     }
     return false;
 }
+
+void Send(int fd, std::string reply) {
+	ssize_t sent = send(fd, reply.c_str(), reply.length(), 0);
+	if (sent == -1) {
+		std::string error = fd + " failed to send " + reply + "\n";
+		throw(std::runtime_error(error));
+	}
+}

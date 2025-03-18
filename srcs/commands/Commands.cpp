@@ -127,24 +127,20 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	
 	//! verifie la size de la cmd
     if (cmd.size() < 2) {
-		std::string msg = ":myserver 461 * :Not enough parameters\r\n";
-		send(fd, msg.c_str(), msg.length(), 0);
-		return;
+		std::string msg = ":myserver 461 " + cmd[0] + " :Not enough parameters\r\n";
+		Send(fd, msg);
 	}
 	//! verfie si le client nest pas deja authentifie
 	if (client.getAuthenticated()) {
 		std::string msg = ":myserver 462 * :You may not reregister\r\n";
-		send(fd, msg.c_str(), msg.length(), 0);
+		Send(fd, msg);
 		return;
 	}
 	//! check le password
 	if (cmd[1] != serv.getPassword()) {
 		std::string msg = ":myserver 464 * :Password incorrect\r\n";
-		
-		ssize_t sent = send(fd, msg.c_str(), msg.length(), 0);
-		if (sent == -1)
-			//perror("send error");
-	
+		Send(fd, msg);
+
 		usleep(100000);
 		
 		shutdown(fd, SHUT_WR);
@@ -162,8 +158,10 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Channel& chan = serv.getChan(cmd[1]);
 	// est-ce que le channel existe ?
 	if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " JOIN :Not enough parameters\r\n";
+		Send(fd, msg);
 		serv.addError("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName());
-		throw(std::runtime_error("Not enough parameters for JOIN command"));
+		throw(std::runtime_error("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName()));
 	}
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	if (!serv.channelExist(cmd[1])){
