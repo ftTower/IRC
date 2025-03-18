@@ -166,19 +166,19 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 							<< std::setw(19)
 							<< buffer
 							<< " | ";
-		if (this->channels[i].getModes()[MODE_INVITE])
+								if (this->channels[channels.size() - 1 - i].getModes()[MODE_INVITE])
 									std::cout << GREEN_BG << " I " << RESET;
 								else 						
 									std::cout << RED_BG << " I " << RESET;
-								if (this->channels[i].getModes()[MODE_KEY])
+								if (this->channels[channels.size() - 1 - i].getModes()[MODE_KEY])
 									std::cout << GREEN_BG << " K " << RESET;
 								else 						
 									std::cout << RED_BG << " K " << RESET;
-								if (this->channels[i].getModes()[MODE_OP])
+								if (this->channels[channels.size() - 1 - i].getModes()[MODE_OP])
 									std::cout << GREEN_BG << " O " << RESET;
 								else 						
 									std::cout << RED_BG << " O " << RESET;
-								if (this->channels[i].getModes()[MODE_TOPIC])
+								if (this->channels[channels.size() - 1 - i].getModes()[MODE_TOPIC])
 									std::cout << GREEN_BG << " T " << RESET;
 								else 						
 									std::cout << RED_BG << " T " << RESET;
@@ -190,15 +190,17 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 
 void Server::errorMessage(size_t size) {
 	if (errors.empty())
-		return ;
+		return;
 	std::cout << std::endl << std::endl << RED_BG << "\t\tLast errors :" << RESET << std::endl;
-	for (size_t i = 0; i < errors.size() && i < size; i++) {
-		if (errors[i].find("\n\r") && size > 3)
+	size_t start = errors.size() > size ? errors.size() - size : 0;
+	for (size_t i = start; i < errors.size(); i++) {
+		if (errors[i].find("\n\r") != std::string::npos && size > 3)
 			std::cout << "\t\t\t" << errors[i].substr(0, errors[i].find("\n\r")) << std::endl;
 		else
 			std::cout << "\t\t\t" << errors[i] << std::endl;
 	}
 }
+
 
 //! ensemble de la routine de message du serveur
 void	Server::serverMessage() {

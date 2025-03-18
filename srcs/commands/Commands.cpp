@@ -163,6 +163,11 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addError("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName());
 		throw(std::runtime_error("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName()));
 	}
+	else if (cmd.size() > 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " JOIN :Too many parameters\r\n";
+		Send(fd, msg);
+		throw(std::runtime_error("Too many parameters for JOIN command from " + serv.findClientFd(fd).nickName()));
+	}
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	if (!serv.channelExist(cmd[1])){
 		serv.addChannel(Channel(cmd[1]));
@@ -280,6 +285,12 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
 	
+	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
+	if (!serv.channelExist(cmd[1])) {
+		std::string msg = ":myserver 403 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :No such channel\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Channel " + cmd[1] + " does not exist.");
+	}
 	Channel &buf = serv.getChan(cmd[1]);
 	
 	bool toSet;
