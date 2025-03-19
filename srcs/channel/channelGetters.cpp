@@ -6,6 +6,10 @@ std::vector <Client> Channel::getUsersList() {
     return (this->users);
 }
 
+std::vector<Client> Channel::getOperatorsList(void) {
+    return (this->operators);
+}
+
 std::string	Channel::getChanName(void){
     return(this->_name);
 }

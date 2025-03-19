@@ -14,6 +14,7 @@ private:
 	std::string topic;
 
 	std::vector<Client> users;
+	std::vector<Client> operators;
 
 	std::time_t creationTime;
 	bool modes[4];
@@ -26,15 +27,20 @@ public:
 	std::string getChanName(void);
 	std::string getTopic(void);
 	std::vector<Client> getUsersList(void);
+	std::vector<Client> getOperatorsList(void);
 	std::time_t getCreationTime(void);
-	bool *getModes();
-
+	bool 		*getModes();
+	
 	//! setters
 	void setModes(t_mode mode, bool toSet);
+	void addClient(Client &newClient);
+	void addOperator(Client &newClient);
 
 	//! methods
-	void addClient(Client &newClient);
+	bool isClientOperator(Client &newOperator);
 	void kickClient(int fd);
+	void kickOperator(int fd);
+	
 
 	//~Channel();
 };

@@ -37,6 +37,7 @@ SRCS = 	srcs/main.cpp \
 		$(CLIENT)clientMethods.cpp \
 		$(CHANNEL)Channel.cpp \
 		$(CHANNEL)channelGetters.cpp \
+		$(CHANNEL)channelSetters.cpp \
 		$(CHANNEL)channelMethods.cpp \
 		$(CMD)cmdParser.cpp \
 		$(CMD)Commands.cpp \

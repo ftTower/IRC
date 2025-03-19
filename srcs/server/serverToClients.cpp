@@ -62,6 +62,10 @@ void Server::ClearClients(int fd)
 			if (channels[i].getUsersList()[y].Fd() == fd)
 				channels[i].kickClient(fd);
 		}
+		for(size_t y = 0; y < channels[i].getOperatorsList().size(); y++) {
+			if (channels[i].getOperatorsList()[y].Fd() == fd)
+				channels[i].kickOperator(fd);
+		}
 	}
 }
 

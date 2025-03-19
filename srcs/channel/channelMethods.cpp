@@ -1,16 +1,5 @@
 #include "../includes/Server.hpp"
 
-
-//! clients
-
-void Channel::addClient(Client &newClient) {
-    for (size_t i = 0;i < users.size(); i++){
-        if (users[i].Fd() == newClient.Fd())
-            throw (std::runtime_error("User already connected."));
-    }
-    users.push_back(newClient);
-}
-
 void  Channel::kickClient(int fd) {
     for(std::vector<Client>::iterator it = users.begin(); it != users.end(); ++it) {
         if (it->Fd() == fd) {
@@ -20,34 +9,20 @@ void  Channel::kickClient(int fd) {
     }
 }
 
-//! modes
-
-// typedef enum e_mode
-// {
-// 	MODE_INVITE,
-// 	MODE_TOPIC,
-// 	MODE_KEY,
-// 	MODE_OP,
-// } t_mode;
-
-//? active ou desactive (true/false), un mode (t_mode) pour un channel
-
-void	Channel::setModes(t_mode mode, bool toSet) {
-    switch (mode)
-    {
-        case MODE_INVITE:
-            modes[MODE_INVITE] = toSet;
+void Channel::kickOperator(int fd) {
+    for(std::vector<Client>::iterator it = operators.begin(); it != operators.end(); ++it) {
+        if (it->Fd() == fd) {
+            operators.erase(it);
             break;
-        case MODE_TOPIC:
-            modes[MODE_TOPIC] = toSet;
-        break;
-        case MODE_KEY:
-            modes[MODE_KEY] = toSet;
-            break;
-        case MODE_OP:
-            modes[MODE_OP] = toSet;
-        break;
-        default:
-            break;
+        }
     }
+}
+
+
+bool Channel::isClientOperator(Client &newOperator) {
+    for (size_t i = 0; i < operators.size(); i++) {
+        if (operators[i].Fd() == newOperator.Fd())
+            return (true);
+    }
+    return (false);
 }

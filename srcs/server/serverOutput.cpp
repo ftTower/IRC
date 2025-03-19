@@ -4,6 +4,7 @@
 #include "includes/Server.hpp"
 
 #include <fstream>
+#include <sstream>
 
 void writeToFile(const std::string &filename, const std::string &content) {
     std::ofstream file;
@@ -160,8 +161,12 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 		char buffer[32];
 		std::strftime(buffer, 32, "%Y-%m-%d %H:%M:%S", ptm);
 		
+		std::ostringstream oss;
+		oss << channels[channels.size() - 1 - i].getChanName() << " U:" << channels[channels.size() - 1 - i].getUsersList().size() << " O:" << channels[channels.size() - 1 - i].getOperatorsList().size();
+		std::string chanName = oss.str();
+		
 		std::cout 			<< "\t\t"
-							<< formatString(channels[channels.size() - 1 - i].getChanName(), 15)
+							<< formatString(chanName, 15)
 							<< " | "
 							<< std::setw(19)
 							<< buffer

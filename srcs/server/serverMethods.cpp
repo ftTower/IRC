@@ -8,7 +8,7 @@ void Server::ReceiveNewData(int fd)
 
 	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 
-	if (bytes <= 0)
+	if (bytes <= 0) 
 		kickClient(fd);
 	else
 	{

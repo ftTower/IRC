@@ -154,9 +154,6 @@ void	pass_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // Parameters: <channel> <password>
 void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	// Channel& chan = serv.getChan(cmd[1]);
-	// est-ce que le channel existe ?
 	if (cmd.size() < 2) {
 		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " JOIN :Not enough parameters\r\n";
 		Send(fd, msg);
@@ -170,8 +167,16 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	}
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	if (!serv.channelExist(cmd[1])){
-		serv.addChannel(Channel(cmd[1]));
+		Channel chan(cmd[1]);
+		chan.addOperator(serv.findClientFd(fd));
+		serv.addChannel(chan);
 	}
+	else if (serv.channelExist(cmd[1]) && serv.getChan(cmd[1]).getModes()[MODE_INVITE]) {
+		std::string msg = ":myserver 473 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :Cannot join channel (+i)\r\n";
+		Send(fd, msg);
+		throw(std::runtime_error(":myserver 473 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :Cannot join channel (+i)\r\n"));
+	}
+	
 	serv.addClientToChannel(fd, cmd[1]);
 	serv.findClientFd(fd).addChannelToList(cmd[1]);
 	//serv.channelMessage(3, true);
@@ -188,8 +193,7 @@ void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Parameters: <channel>{,<channel>} [<reason>]
 
 	if (cmd.size() < 2) {
-		serv.addError("Not enough parameters for PART command from " + serv.findClientFd(fd).nickName());
-		throw std::runtime_error("Not enough parameters for PART command");
+		throw std::runtime_error("Not enough parameters for PART command from " + serv.findClientFd(fd).nickName());
 	}
 
 	Client &client = serv.findClientFd(fd);
@@ -294,8 +298,13 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	Channel &buf = serv.getChan(cmd[1]);
 	
 	bool toSet;
-	 
-	if (cmd[2].empty()) {
+	
+	if (buf.isClientOperator(serv.findClientFd(fd))) {
+		std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :You're not a channel operator\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
+	}
+	else if (cmd[2].empty()) {
 		serv.addError("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
 		throw std::runtime_error("Invalid argument for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
