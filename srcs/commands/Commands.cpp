@@ -261,7 +261,23 @@ void	invite_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	// Commande utilisee pour inviter un utilisateur dans un channel
 
 	// Parameters: <nickname> <channel>
-	
+	if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " INVITE :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for INVITE command from " + serv.findClientFd(fd).nickName());
+	}
+	else {
+		for (size_t i = 0; i < cmd.size(); i++) {
+			cmd[i].erase(std::remove_if(cmd[i].begin(), cmd[i].end(), ::isspace), cmd[i].end());
+		}
+		
+		Client& invited = serv.findClientNick(cmd[1]);
+		Channel& chan = serv.getChan(cmd[2]);
+		
+		chan.addInvitation(invited);
+		std::string msg = ":" + serv.findClientFd(fd).nickName() + std::string(" INVITE ") + invited.nickName() + " :" + chan.getChanName() + "\r\n";
+		Send(invited.Fd(), msg);
+	}
 }
 
 void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd)
@@ -285,7 +301,6 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 	// Parameters: <target> [<modestring> [<mode arguments>...]]
 	if (cmd.size() < 3) {
-		serv.addError("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
 	

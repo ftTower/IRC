@@ -12,6 +12,11 @@ void Channel::addOperator(Client &newClient) {
     operators.push_back(newClient);
 }
 
+void Channel::addInvitation(Client &newClient) {
+    invitations.push_back(newClient);
+}
+
+
 //! modes
 
 // typedef enum e_mode

@@ -18,10 +18,26 @@ void Channel::kickOperator(int fd) {
     }
 }
 
+void Channel::kickInvitation(int fd) {
+    for(std::vector<Client>::iterator it = invitations.begin(); it != invitations.end(); ++it) {
+        if (it->Fd() == fd) {
+            invitations.erase(it);
+            break;
+        }
+    }
+}
 
 bool Channel::isClientOperator(Client &newOperator) {
     for (size_t i = 0; i < operators.size(); i++) {
         if (operators[i].Fd() == newOperator.Fd())
+            return (true);
+    }
+    return (false);
+}
+
+bool Channel::isClientInvited(Client &newOperator) {
+    for (size_t i = 0; i < invitations.size(); i++) {
+        if (invitations[i].Fd() == newOperator.Fd())
             return (true);
     }
     return (false);

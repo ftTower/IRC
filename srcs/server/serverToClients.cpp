@@ -66,6 +66,10 @@ void Server::ClearClients(int fd)
 			if (channels[i].getOperatorsList()[y].Fd() == fd)
 				channels[i].kickOperator(fd);
 		}
+		for(size_t y = 0; y < channels[i].getInvitationsList().size(); y++) {
+			if (channels[i].getInvitationsList()[y].Fd() == fd)
+				channels[i].kickInvitation(fd);
+		}
 	}
 }
 
@@ -85,7 +89,6 @@ Client &Server::findClientNick(std::string nick)
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
-		std::cout << GREEN_TEXT << "["<<  clients[i].nickName() << "] [" << nick << "]" << std::endl;
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}
