@@ -27,6 +27,15 @@ void Channel::kickInvitation(int fd) {
     }
 }
 
+bool Channel::isClientConnected(Client &Client) {
+    for (size_t i = 0; i < users.size(); i++) {
+        if (Client.Fd() == users[i].Fd())
+            return (true);
+    }
+    return (false);
+}
+
+
 bool Channel::isClientOperator(Client &newOperator) {
     for (size_t i = 0; i < operators.size(); i++) {
         if (operators[i].Fd() == newOperator.Fd())

@@ -24,3 +24,13 @@ std::string Server::getPassword() const {
 bool		Server::getPass() const {
 	return (this->_pass);
 }
+
+std::vector<Client> Server::getAllClients() {
+	std::vector<Client> vec;
+	
+	for (size_t i = 0; i < channels.size(); i++) {
+		std::vector<Client> users = channels[i].getUsersList();
+		vec.insert(vec.end(), users.begin(), users.end());
+	}
+	return (vec);
+}

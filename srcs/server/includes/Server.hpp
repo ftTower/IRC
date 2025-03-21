@@ -66,7 +66,8 @@ class Server
 		std::vector<Channel> getChannelList();
 		std::string getPassword() const;
 		bool getPass() const;
-
+		std::vector<Client> getAllClients();
+		
 		//! METHODS
 		void Init();
 		void Run();

@@ -35,11 +35,13 @@ public:
 	
 	//! setters
 	void 				setModes(t_mode mode, bool toSet);
+	void				setTopic(std::string topic);
 	void 				addClient(Client &newClient);
 	void 				addOperator(Client &newClient);
 	void 				addInvitation(Client &newClient);
 
 	//! methods
+	bool				isClientConnected(Client &Client);
 	bool 				isClientOperator(Client &newOperator);
 	bool 				isClientInvited(Client &newOperator);
 	void 				kickClient(int fd);

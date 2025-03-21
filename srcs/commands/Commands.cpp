@@ -346,139 +346,161 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	}
 }
 
-// void mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
-// {
-// 	if (cmd.size() < 3) {
-// 		serv.addError("Not enough parameters for MODE command from " + serv.findClientFd(fd).nickName());
-// 		throw std::runtime_error("Not enough parameters for MODE command from " + serv.findClientFd(fd).nickName());
-// 	}
-
-// 	// Vérifier si le canal existe
-// 	if (!serv.channelExists(cmd[1])) {
-// 		serv.addError("Channel " + cmd[1] + " does not exist.");
-// 		throw std::runtime_error("Channel " + cmd[1] + " does not exist.");
-// 	}
-
-// 	Channel &buf = serv.getChan(cmd[1]);
-
-// 	// Vérifier si l'utilisateur est dans le canal
-// 	Client &client = serv.findClientFd(fd);
-// 	if (!buf.isClientInChannel(client)) {
-// 		serv.addError("User " + client.nickName() + " is not in channel " + cmd[1]);
-// 		throw std::runtime_error("User " + client.nickName() + " is not in channel " + cmd[1]);
-// 	}
-
-// 	// Vérifier le format du mode (+ ou - en premier caractère)
-// 	bool toSet;
-// 	if (cmd[2].empty() || (cmd[2][0] != '+' && cmd[2][0] != '-')) {
-// 		serv.addError("Invalid mode format from " + client.nickName());
-// 		throw std::runtime_error("Invalid mode format from " + client.nickName());
-// 	}
-// 	toSet = (cmd[2][0] == '+');
-
-// 	// Vérifier si l'utilisateur est opérateur avant de modifier certains modes
-// 	if (!buf.isOperator(client)) {
-// 		serv.addError("User " + client.nickName() + " is not a channel operator.");
-// 		throw std::runtime_error("User " + client.nickName() + " is not a channel operator.");
-// 	}
-
-// 	size_t argIndex = 3;
-// 	for (size_t i = 1; i < cmd[2].size(); ++i) {
-// 		switch (cmd[2][i]) {
-// 			case 'i': // Mode invitation-only
-// 				buf.setModes(MODE_INVITE, toSet);
-// 				break;
-// 			case 't': // Mode topic restreint
-// 				buf.setModes(MODE_TOPIC, toSet);
-// 				break;
-// 			case 'k': // Mode mot de passe (nécessite un argument)
-// 				if (argIndex >= cmd.size()) {
-// 					serv.addError("Missing argument for mode 'k'.");
-// 					throw std::runtime_error("Missing argument for mode 'k'.");
-// 				}
-// 				buf.setKey(toSet ? cmd[argIndex] : "");
-// 				argIndex++;
-// 				break;
-// 			case 'o': // Mode opérateur (nécessite un argument)
-// 				if (argIndex >= cmd.size()) {
-// 					serv.addError("Missing argument for mode 'o'.");
-// 					throw std::runtime_error("Missing argument for mode 'o'.");
-// 				}
-// 				buf.setOperator(cmd[argIndex], toSet);
-// 				argIndex++;
-// 				break;
-// 			default:
-// 				serv.addError("Unknown mode '" + std::string(1, cmd[2][i]) + "' from " + client.nickName());
-// 				throw std::runtime_error("Unknown mode '" + std::string(1, cmd[2][i]) + "' from " + client.nickName());
-// 		}
-// 	}
-// }
-
-
 void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
-
 	// On l'utilise pour changer ou voir un topic du channel donne.
 
 	// Parameters: <channel> [<topic>]
+
+	if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " TOPIC :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for TOPIC command from " + serv.findClientFd(fd).nickName());
+	}
+	
+	Channel &Chan = serv.getChan(cmd[1]);
+	
+	if (cmd.size() == 2) {
+		if (Chan.getTopic().empty()) {
+			std::string msg = ":myserver 331 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :No topic is set\r\n";
+			Send(fd, msg);
+		} else {
+			std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + Chan.getTopic() + "\r\n";
+			Send(fd, msg);
+		}
+	}
+	else {
+		if (!Chan.isClientOperator(serv.findClientFd(fd))) {
+			std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :You're not a channel operator\r\n";
+			Send(fd, msg);
+			throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
+		}
+		Chan.setTopic(cmd[2]);
+		std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + cmd[2] + "\r\n";
+		Send(fd, msg);
+	}
 }
 
 void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
-	(void)fd;
-	(void)cmd;
-	(void)serv;
+	if (cmd.size() < 3) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " KICK :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for KICK command from " + serv.findClientFd(fd).nickName());
+	}
 
-	// Peut etre utilise pour demander de supprimer de force 
-	// un utilisateur dans un channel
+	std::string channelName = cmd[1];
+	std::vector<std::string> users = splitString(cmd[2], ',');
+	std::string comment = cmd.size() > 3 ? cmd[3] : "Kicked";
 
-	// Parameters: <channel> <user> *("," <user>) [<comment>]
+	channelName.erase(std::remove_if(channelName.begin(), channelName.end(), ::isspace), channelName.end());
 
-	//std::cout << "\t\t\t\t\t\t" << RED_BG << BOLD_RED << "Client " << RESET << RED_BG << BOLD_YELLOW << fd << RESET << RED_BG << " Disconnected !" << RESET << std::endl;
-	// serv.ClearClients(fd);
-	// close(fd);
+	if (!serv.channelExist(channelName)) {
+		std::string msg = ":myserver 403 " + serv.findClientFd(fd).nickName() + " " + channelName + " :No such channel\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Channel " + channelName + " does not exist.");
+	}
+
+	Channel &channel = serv.getChan(channelName);
+
+	if (!channel.isClientOperator(serv.findClientFd(fd))) {
+		std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + channelName + " :You're not a channel operator\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
+	}
+
+	for (size_t i = 0; i < users.size(); ++i) {
+		users[i].erase(std::remove_if(users[i].begin(), users[i].end(), ::isspace), users[i].end());
+
+		if (!channel.isClientConnected(serv.findClientNick(users[i]))) {
+			std::string msg = ":myserver 441 " + serv.findClientFd(fd).nickName() + " " + users[i] + " " + channelName + " :They aren't on that channel\r\n";
+			Send(fd, msg);
+			continue;
+		}
+
+		Client &client = serv.findClientNick(users[i]);
+		std::vector<std::string> vec;
+		vec.push_back(client.nickName());
+		channel.kickClient(client.Fd());
+		client.removeChannelToList(channelName);
+
+		std::string kickMsg = ":" + serv.findClientFd(fd).nickName() + " KICK " + channelName + " " + client.nickName() + " :" + comment + "\r\n";
+		serv.sendMessage(vec, kickMsg, serv.findClientFd(fd));
+	}
 }
 
 void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd){
-    (void)cmd;
-	// The mask can be one of the following:
+	if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " WHO :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for WHO command from " + serv.findClientFd(fd).nickName());
+	}
 
-    // A channel name, in which case the channel members are listed.
-    // An exact nickname, in which case a single user is returned.
-    // A mask pattern, in which case all visible users whose nickname matches are listed. Servers MAY match other user-specific values, such as the hostname, server, real name or username. Servers MAY not support mask patterns and return an empty list.
+	std::string mask = cmd[1];
+	std::vector<std::string> response;
 
-    //std::cout << "Dans quel(s) channel(s) est " << serv.findClientFd(fd).nickName() << " ?\n" << std::endl;
-	std::cout << getTimestamp() << "\t" << serv.findClientFd(fd).nickName() << " ";
-	std::vector<std::string> channelsList = serv.findClientFd(fd).getChannelList();
-	for (size_t i = 0; i < channelsList.size(); i++)
-		std::cout << channelsList[i] << " ";
-	std::cout << "\n";
+	if (serv.channelExist(mask)) {
+		Channel &channel = serv.getChan(mask);
+		std::vector<Client> clients = channel.getUsersList();
+		for (size_t i = 0; i < clients.size(); ++i) {
+			response.push_back(clients[i].nickName());
+		}
+	} else if (serv.isNickUsed(mask, 10000)) {
+		response.push_back(serv.findClientNick(mask).nickName());
+	} else {
+		std::vector<Client> clients = serv.getAllClients();
+		for (size_t i = 0; i < clients.size(); ++i) {
+			response.push_back(clients[i].nickName());
+		}
+	}
+
+	if (response.empty()) {
+		std::string msg = ":myserver 315 " + serv.findClientFd(fd).nickName() + " " + mask + " :End of WHO list\r\n";
+		Send(fd, msg);
+		return;
+	}
+
+	for (size_t i = 0; i < response.size(); ++i) {
+		std::string msg = ":myserver 352 " + serv.findClientFd(fd).nickName() + " " + response[i] + "\r\n";
+		Send(fd, msg);
+	}
+
+	std::string endMsg = ":myserver 315 " + serv.findClientFd(fd).nickName() + " " + mask + " :End of WHO list\r\n";
+	Send(fd, endMsg);
+	
 }
 
 // aligner les :
 void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd){
-    if (cmd.size() == 1)
-    {
-        std::cout << "ircname: " << serv.findClientFd(fd).nickName() << std::endl;
-        std::cout << "modes: " << "add modes ? ex: +ixz" << std::endl;
-        std::cout << "hostname: " << "88-121-161-222.subs.proxad.ned 88.121.161.222" << std::endl;
-        std::cout << "server: notre super server irc trop cool.org" << std::endl;
-        std::cout << "idle: " << "0 day 0 hours 0 mins 10secs [signon: Thu Jan 30 13:47:44 2025]" << std::endl;
-        std::cout << "End of WHOIS" << std::endl;
-    }
-    if (cmd.size() == 2)
-    {
-        std::string name = cmd[1];
-        std::cout << "ircname: " << serv.findClientNick(name).nickName() << std::endl;
-        std::cout << "modes: " << "add modes ? ex: +ixz" << std::endl;
-        std::cout << "hostname: " << "88-121-161-222.subs.proxad.ned 88.121.161.222" << std::endl;
-        std::cout << "server: notre super server irc trop cool.org" << std::endl;
-        std::cout << "idle: " << "0 day 0 hours 0 mins 10secs [signon: Thu Jan 30 13:47:44 2025]" << std::endl;
-        std::cout << "End of WHOIS" << std::endl;
-    }
+	if (cmd.size() < 2) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " WHOIS :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for WHOIS command from " + serv.findClientFd(fd).nickName());
+	}
+
+	std::string targetNick = cmd[1];
+	targetNick.erase(std::remove_if(targetNick.begin(), targetNick.end(), ::isspace), targetNick.end());
+	
+	if (!serv.isNickUsed(targetNick, 10000)) {
+		std::string msg = ":myserver 401 " + serv.findClientFd(fd).nickName() + " " + targetNick + " :No such nick/channel\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("No such nick/channel");
+	}
+
+	Client &target = serv.findClientNick(targetNick);
+	std::string msg;
+
+	msg = ":myserver 311 " + serv.findClientFd(fd).nickName() + " " + target.nickName() + " " + target.nickName() + " " + target.realName() + " * :" + target.realName() + "\r\n";
+	Send(fd, msg);
+
+	msg = ":myserver 312 " + serv.findClientFd(fd).nickName() + " " + target.nickName() + " myserver :Our super cool IRC server\r\n";
+	Send(fd, msg);
+
+	//msg = ":myserver 317 " + serv.findClientFd(fd).nickName() + " " + target.nickName() + " " + std::to_string(target.idleTime()) + " :seconds idle\r\n";
+	//Send(fd, msg);
+
+	msg = ":myserver 318 " + serv.findClientFd(fd).nickName() + " " + target.nickName() + " :End of WHOIS list\r\n";
+	Send(fd, msg);
 }
 
 

@@ -57,13 +57,14 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 			return;
 		}
 		
+		
 		//! parser de commandes
 		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 		void (*foo[])(Server&,int,std::vector<std::string>) = {
 			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
 		};
 		for(size_t i = 0; i < sizeof(cmds)/sizeof(cmds[0]); i++)
-			if (cmd.find(cmds[i]) != std::string::npos) { //? cherche si un des mots entree est une commande connue (sans if/else if/...)
+			if (commands[0] == cmds[i]) { //? cherche si un des mots entree est une commande connue (sans if/else if/...)
 				try {
 					foo[i](serv,fd, commands);} //? utilise la fonction associes a i dans cmds
 				catch (std::exception &e) {
