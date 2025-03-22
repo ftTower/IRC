@@ -181,23 +181,35 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		serv.addError("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName());
 		throw(std::runtime_error("Not enough parameters for JOIN command from " + serv.findClientFd(fd).nickName()));
 	}
-	else if (cmd.size() > 2) {
+	else if (cmd.size() > 3) {
 		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " JOIN :Too many parameters\r\n";
 		Send(fd, msg);
 		throw(std::runtime_error("Too many parameters for JOIN command from " + serv.findClientFd(fd).nickName()));
 	}
+
+
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
+	if (cmd.size() > 2) {
+		cmd[2].erase(std::remove_if(cmd[2].begin(), cmd[2].end(), ::isspace), cmd[2].end());
+	}
+
+
 	if (!serv.channelExist(cmd[1])){
 		Channel chan(cmd[1]);
 		chan.addOperator(serv.findClientFd(fd));
 		serv.addChannel(chan);
 	}
-	else if (serv.channelExist(cmd[1]) && serv.getChan(cmd[1]).getModes()[MODE_INVITE]) {
+	else if (serv.channelExist(cmd[1]) && serv.getChan(cmd[1]).getModes()[MODE_INVITE] && !serv.getChan(cmd[1]).isClientInvited(serv.findClientFd(fd))) {
 		std::string msg = ":myserver 473 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :Cannot join channel (+i)\r\n";
 		Send(fd, msg);
-		throw(std::runtime_error(":myserver 473 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :Cannot join channel (+i)\r\n"));
 	}
-	
+	else if (serv.channelExist(cmd[1]) && serv.getChan(cmd[1]).getModes()[MODE_KEY] && (cmd.size() < 3 || cmd[2].empty() || cmd[2] != serv.getChan(cmd[1]).getPassword())) {
+		std::string msg = ":myserver 475 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :Cannot join channel (+k) - wrong key\r\n";
+		// serv.addError("[" + cmd[2] + "]" + "[" + serv.getChan(cmd[1]).getPassword() + "]");
+		Send(fd, msg);
+		throw(std::runtime_error("Cannot join channel (+k) - wrong key"));
+	}
+
 	serv.addClientToChannel(fd, cmd[1]);
 	serv.findClientFd(fd).addChannelToList(cmd[1]);
 	//serv.channelMessage(3, true);
@@ -367,10 +379,18 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 			buf.setModes(MODE_INVITE, toSet);
 		else if (cmd[i][1] == 't') 
 			buf.setModes(MODE_TOPIC, toSet);
-		else if (cmd[i][1] == 'k') 
+		else if (cmd[i][1] == 'k') {
+			if (cmd[i][0] == '+' && (i + 1 >= cmd.size() || cmd[i + 1].empty())) {
+				std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " MODE :Not enough parameters (key required)\r\n";
+				Send(fd, msg);
+				throw std::runtime_error("No key specified for +k mode");
+			} else if (cmd[i][0] == '+') {
+				buf.setPassword(cmd[i + 1]);
+			}
 			buf.setModes(MODE_KEY, toSet);
-		else if (cmd[i][1] == 'o') 
-			buf.setModes(MODE_OP, toSet);
+		}
+		else if (cmd[i][1] == 'l') 
+			buf.setModes(MODE_LIMIT, toSet);
 	}
 }
 

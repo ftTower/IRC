@@ -179,10 +179,10 @@ void	Server::channelMessage(size_t size, bool displayTime) {
 									std::cout << GREEN_BG << " K " << RESET;
 								else 						
 									std::cout << RED_BG << " K " << RESET;
-								if (this->channels[channels.size() - 1 - i].getModes()[MODE_OP])
-									std::cout << GREEN_BG << " O " << RESET;
+								if (this->channels[channels.size() - 1 - i].getModes()[MODE_LIMIT])
+									std::cout << GREEN_BG << " L " << RESET;
 								else 						
-									std::cout << RED_BG << " O " << RESET;
+									std::cout << RED_BG << " L " << RESET;
 								if (this->channels[channels.size() - 1 - i].getModes()[MODE_TOPIC])
 									std::cout << GREEN_BG << " T " << RESET;
 								else 						

@@ -23,7 +23,7 @@ typedef enum e_mode
 	MODE_INVITE,
 	MODE_TOPIC,
 	MODE_KEY,
-	MODE_OP,
+	MODE_LIMIT,
 } t_mode;
 
 class Client

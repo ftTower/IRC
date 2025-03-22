@@ -12,6 +12,7 @@ class Channel
 private:
 	std::string 		_name;
 	std::string 		topic;
+	std::string			password;
 
 	std::vector<Client> users;
 	std::vector<Client> operators;
@@ -27,6 +28,7 @@ public:
 	//! getters
 	std::string 		getChanName(void);
 	std::string 		getTopic(void);
+	std::string 		getPassword(void);
 	std::vector<Client> getUsersList(void);
 	std::vector<Client> getOperatorsList(void);
 	std::vector<Client> getInvitationsList(void);
@@ -36,6 +38,7 @@ public:
 	//! setters
 	void 				setModes(t_mode mode, bool toSet);
 	void				setTopic(std::string topic);
+	void				setPassword(std::string password);
 	void 				addClient(Client &newClient);
 	void 				addOperator(Client &newClient);
 	void 				addInvitation(Client &newClient);

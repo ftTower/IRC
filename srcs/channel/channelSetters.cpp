@@ -16,6 +16,12 @@ void Channel::addInvitation(Client &newClient) {
     invitations.push_back(newClient);
 }
 
+void				Channel::setPassword(std::string Password) {
+	Password.erase(std::remove_if(Password.begin(), Password.end(), ::isspace), Password.end());
+    
+    password = Password;
+}
+
 
 //! modes
 
@@ -41,8 +47,8 @@ void	Channel::setModes(t_mode mode, bool toSet) {
         case MODE_KEY:
             modes[MODE_KEY] = toSet;
             break;
-        case MODE_OP:
-            modes[MODE_OP] = toSet;
+        case MODE_LIMIT:
+            modes[MODE_LIMIT] = toSet;
         break;
         default:
             break;

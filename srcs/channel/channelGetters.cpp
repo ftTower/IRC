@@ -23,6 +23,11 @@ std::string Channel::getTopic(void) {
     return (this->topic);
 }
 
+std::string 		Channel::getPassword(void) {
+    return (this->password);
+}
+
+
 std::time_t Channel::getCreationTime(void) {
     return(this->creationTime);
 }
