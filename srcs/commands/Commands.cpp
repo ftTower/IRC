@@ -29,9 +29,26 @@ void    capls_cmd(Server &serv, int fd, std::vector<std::string> cmd) {
 void handleClientName(Server &serv, Client &client ,std::string nickName) {
 	
 	nickName.erase(std::remove_if(nickName.begin(), nickName.end(), ::isspace), nickName.end());
+	// cmd[0].erase(std::remove_if(cmd[0].begin(), cmd[0].end(), ::isspace), cmd[0].end());
 	
-	while(serv.isNickUsed(nickName, client.Fd()))
-		nickName += "_";
+	if (nickName.empty()) {
+		std::string msg = ":myserver 431 * :No nickname given\r\n";
+		Send(client.Fd(), msg);
+		throw std::runtime_error("No nickname given");
+	}
+	if (serv.isNickUsed(nickName, client.Fd())) {
+		if (!serv.getErrors().empty() && serv.getErrors().size() > 1 && 
+			(serv.getErrors()[serv.getErrors().size() - 2].find("NICK") == std::string::npos || 
+			 serv.getErrors()[serv.getErrors().size() - 2].find("USER") == std::string::npos))
+			return ;
+		// std::string msg = ":myserver 433 * " + nickName + " :Nickname is already in use\r\n";
+		// Send(client.Fd(), msg);
+		// throw std::runtime_error("Nickname is already in use");
+		while(serv.isNickUsed(nickName, 10000))
+			nickName += "_";
+	}
+	// std::string msg = ":myserver 001 " + client.nickName() + " :Nickname successfully set\r\n";
+	// Send(client.Fd(), msg);
 	client.setNickname(nickName);
 }
 
@@ -41,8 +58,9 @@ void handleClientName(Server &serv, Client &client ,std::string nickName) {
 void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 {
 	if (cmd.size() != 2) {
-		serv.addError(std::string("Invalid number of parameters for NICK command from ") + serv.findClientFd(fd).nickName());
-		throw std::runtime_error("Invalid number of parameters for NICK command");
+		std::string msg = ":myserver 431 " + serv.findClientFd(fd).nickName() + " :No nickname given\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Invalid number of parameters for NICK command from " + serv.findClientFd(fd).nickName());
 	}
 	std::string nickname = cmd[1];
 	Client& client = serv.findClientFd(fd);
@@ -51,10 +69,7 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		
 	std::string welcome = ":server 001 " + client.nickName() + " :Welcome to the IRC server\r\n";
 	
-	if (send(fd, welcome.c_str(), welcome.size(), 0) < 0) {
-		serv.addError(std::string("failed to send welcome to ") + client.nickName());
-		throw(std::runtime_error(std::string("failed to send welcome to ") + client.nickName()));
-	}
+	Send(fd, welcome);
 }
 
 // On l'utilise au debut de la connexion pour specifier 
@@ -63,6 +78,12 @@ void	nick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 // Parameters: <nickname> <IP Address> <realname>
 void	user_cmd(Server &serv, int fd,std::vector<std::string> cmd)//, std::string Ip, std::string realName)
 {
+	if (cmd.size() < 4) {
+		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " USER :Not enough parameters\r\n";
+		Send(fd, msg);
+		throw std::runtime_error("Not enough parameters for USER command from " + serv.findClientFd(fd).nickName());
+	}
+
 	Client& client = serv.findClientFd(fd);
 	//std::cout << cmd[0] + '\n' << cmd[1] + '\n' << cmd[2] + '\n' << cmd[3] + '\n' << std::endl;
 	
@@ -303,9 +324,16 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	if (cmd.size() < 3) {
 		throw std::runtime_error("Not enough parameters for MODE command from " +  serv.findClientFd(fd).nickName());
 	}
-	
 	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
+	
 	if (!serv.channelExist(cmd[1])) {
+		std::vector<std::string> historic = serv.findClientFd(fd).getHistoric();
+		if (historic.size() > 1) {
+			for (size_t i = 1; i < historic.size(); i++) {
+				if (historic[i].find("MODE") != std::string::npos && (historic[i - 1].find("NICK") != std::string::npos || historic[i - 1].find("USER") != std::string::npos)) 
+					return ;
+		}
+	}
 		std::string msg = ":myserver 403 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :No such channel\r\n";
 		Send(fd, msg);
 		throw std::runtime_error("Channel " + cmd[1] + " does not exist.");
@@ -314,7 +342,7 @@ void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	
 	bool toSet;
 	
-	if (buf.isClientOperator(serv.findClientFd(fd))) {
+	if (!buf.isClientOperator(serv.findClientFd(fd))) {
 		std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :You're not a channel operator\r\n";
 		Send(fd, msg);
 		throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
@@ -357,7 +385,8 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		Send(fd, msg);
 		throw std::runtime_error("Not enough parameters for TOPIC command from " + serv.findClientFd(fd).nickName());
 	}
-	
+
+	cmd[1].erase(std::remove_if(cmd[1].begin(), cmd[1].end(), ::isspace), cmd[1].end());
 	Channel &Chan = serv.getChan(cmd[1]);
 	
 	if (cmd.size() == 2) {
@@ -370,7 +399,7 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		}
 	}
 	else {
-		if (!Chan.isClientOperator(serv.findClientFd(fd))) {
+		if (!Chan.isClientOperator(serv.findClientFd(fd)) && Chan.getModes()[MODE_TOPIC]) {
 			std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :You're not a channel operator\r\n";
 			Send(fd, msg);
 			throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");

@@ -77,6 +77,7 @@ void Server::addError(std::string error) {
 //! time
 #include <iostream>
 #include <ctime>
+#include <sstream>
 
 std::string getTimestamp() {
     std::time_t now = std::time(0);
@@ -99,7 +100,9 @@ bool shouldTriggerEveryXSeconds(int x) {
 void Send(int fd, std::string reply) {
 	ssize_t sent = send(fd, reply.c_str(), reply.length(), 0);
 	if (sent == -1) {
-		std::string error = fd + " failed to send " + reply + "\n";
+		std::ostringstream oss;
+		oss << fd << " failed to send " << reply << "\n";
+		std::string error = oss.str();
 		throw(std::runtime_error(error));
 	}
 }

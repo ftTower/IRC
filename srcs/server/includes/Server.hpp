@@ -67,7 +67,8 @@ class Server
 		std::string getPassword() const;
 		bool getPass() const;
 		std::vector<Client> getAllClients();
-		
+		std::vector<std::string> getErrors();
+
 		//! METHODS
 		void Init();
 		void Run();

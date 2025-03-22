@@ -212,7 +212,7 @@ void	Server::serverMessage() {
 	std::cout << "\033c";
 	usersMessage(10, true);
 	channelMessage(10, false);
-	errorMessage(5);
+	errorMessage(10);
 	std::cout << "\n\n";
 }
 
