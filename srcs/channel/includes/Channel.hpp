@@ -13,6 +13,7 @@ private:
 	std::string 		_name;
 	std::string 		topic;
 	std::string			password;
+	long				userLimit;
 
 	std::vector<Client> users;
 	std::vector<Client> operators;
@@ -29,6 +30,7 @@ public:
 	std::string 		getChanName(void);
 	std::string 		getTopic(void);
 	std::string 		getPassword(void);
+	long				getUserLimit(void);
 	std::vector<Client> getUsersList(void);
 	std::vector<Client> getOperatorsList(void);
 	std::vector<Client> getInvitationsList(void);
@@ -42,6 +44,7 @@ public:
 	void 				addClient(Client &newClient);
 	void 				addOperator(Client &newClient);
 	void 				addInvitation(Client &newClient);
+	void				setUserLimit(long limit);
 
 	//! methods
 	bool				isClientConnected(Client &Client);

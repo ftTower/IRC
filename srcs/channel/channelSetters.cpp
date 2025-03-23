@@ -22,6 +22,10 @@ void				Channel::setPassword(std::string Password) {
     password = Password;
 }
 
+void Channel::setUserLimit(long limit) {
+    userLimit = limit;
+}
+
 
 //! modes
 

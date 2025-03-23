@@ -89,10 +89,11 @@ Client &Server::findClientNick(std::string nick)
 {
 	for (size_t i = 0; i < clients.size(); i++)
 	{
+		nick.erase(std::remove_if(nick.begin(), nick.end(), ::isspace), nick.end());
 		if (clients[i].nickName() == nick)
 			return clients[i];
 	}
-	throw std::runtime_error(nick);
+	throw std::runtime_error("client named [" + nick + "] not found");
 }
 
 //! est ce que le nick est utilise 

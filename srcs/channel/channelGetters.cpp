@@ -27,6 +27,10 @@ std::string 		Channel::getPassword(void) {
     return (this->password);
 }
 
+long				Channel::getUserLimit(void) {
+    return (this->userLimit);
+}
+
 
 std::time_t Channel::getCreationTime(void) {
     return(this->creationTime);
