@@ -69,6 +69,80 @@ irssi -c localhost -p 6667 -n monPseudo
 
 ---
 
+# **IRC Server en C++98**
+
+Ce projet implémente un **serveur IRC** basique en **C++98** qui gère les connexions clients, les canaux et la communication entre utilisateurs. Il repose sur le protocole IRC et utilise `poll()` pour la gestion des connexions réseau.
+
+## **Structure du projet**
+
+### **1. Client.hpp** (Gestion des utilisateurs)
+Ce fichier définit la classe `Client`, qui représente un utilisateur connecté au serveur.  
+Un client possède :
+- Un **pseudo** et un **vrai nom** (`_nickName`, `_realName`).
+- Un **file descriptor** (`_fd`) pour la communication réseau.
+- Son **adresse IP** (`_IPadd`).
+- Un historique des commandes envoyées (`historic`).
+- Une liste des canaux auxquels il est connecté (`channelsList`).
+- Un état d'**authentification** (`_authenticated`).
+
+#### **Méthodes importantes :**
+- `setNickname()`, `setRealName()` → Définit les informations utilisateur.
+- `addChannelToList()`, `removeChannelToList()` → Gère l'inscription aux canaux.
+- `ReceiveMessage()` → Récupère les données envoyées par l'utilisateur.
+
+---
+
+### **2. Channel.hpp** (Gestion des canaux)
+Ce fichier définit la classe `Channel`, qui représente un **salon IRC**.  
+Chaque canal possède :
+- Un **nom** (`_name`).
+- Un **sujet** (`topic`).
+- Une **liste des utilisateurs** (`users`).
+- Une **liste des opérateurs** (`operators`).
+- Une **liste des invitations** (`invitations`).
+- Un **mot de passe** (`password`).
+- Un **nombre limite d’utilisateurs** (`userLimit`).
+- Un tableau de **modes activés** (`modes`).
+- Une **date de création** (`creationTime`).
+
+#### **Méthodes importantes :**
+- `addClient()`, `addOperator()`, `addInvitation()` → Ajoute des utilisateurs.
+- `isClientConnected()`, `isClientOperator()`, `isClientInvited()` → Vérifie les droits.
+- `kickClient()`, `kickOperator()` → Éjecte un utilisateur du canal.
+
+---
+
+### **3. Server.hpp** (Gestion du serveur)
+Ce fichier définit la classe `Server`, qui représente le serveur IRC.  
+Le serveur gère :
+- Les connexions sur un **port donné** (`_Port`).
+- Une **liste de clients connectés** (`clients`).
+- Une **liste de canaux** (`channels`).
+- La gestion des **erreurs** (`errors`).
+- Le **mot de passe du serveur** (`_password`).
+- Les **événements réseau** avec `poll()` (`fds`).
+
+#### **Méthodes importantes :**
+- `Init()` → Initialise le socket du serveur.
+- `Run()` → Boucle principale qui gère les connexions et la communication.
+- `AcceptNewClient()` → Accepte un nouvel utilisateur.
+- `kickClient()` → Déconnecte un client.
+- `sendMessage()` → Envoie un message aux utilisateurs d’un canal.
+- `HandleNewData()` → Analyse les commandes envoyées par les clients.
+- `SignalHandler()` → Gère les interruptions système (`CTRL+C`).
+
+---
+
+## **Fonctionnalités**
+- **Connexion des utilisateurs** avec gestion des pseudos.
+- **Création et gestion des canaux** (avec opérateurs, invitations, etc.).
+- **Gestion des permissions et de l'authentification**.
+- **Système de communication IRC basique**.
+- **Utilisation de `poll()`** pour la gestion des connexions multiples.
+
+---
+
+
 ## Commandes Implémentées  
 
 FT_IRC prend en charge plusieurs commandes IRC standard permettant aux utilisateurs d'interagir avec le serveur et entre eux.  
@@ -96,6 +170,3 @@ FT_IRC prend en charge plusieurs commandes IRC standard permettant aux utilisate
 - **VERSION** : Renvoie la version du serveur IRC.  
 - **PING `<message>`** : Vérifie la connexion avec le serveur.  
 - **PONG `<message>`** : Répond à une requête PING du serveur.  
-
-
-
