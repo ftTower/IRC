@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 11:09:56 by lleciak           #+#    #+#             */
-/*   Updated: 2025/01/30 14:33:01 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:52:38 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		
 		
 		//! parser de commandes
-		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHO", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
+		std::string cmds[] = {"CAP", "NICK", "USER", "PING", "PONG", "WHOIS", "VERSION", "PASS", "JOIN", "PART", "PRIVMSG", "INVITE", "QUIT", "MODE", "TOPIC", "KICK"};
 		void (*foo[])(Server&,int,std::vector<std::string>) = {
-			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, who_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
+			capls_cmd ,nick_cmd, user_cmd, pong_cmd, ping_cmd, whois_cmd, version_cmd, pass_cmd, join_cmd, part_cmd, privmsg_cmd, invite_cmd, quit_cmd, mode_cmd, topic_cmd, kick_cmd
 		};
 		for(size_t i = 0; i < sizeof(cmds)/sizeof(cmds[0]); i++)
 			if (commands[0] == cmds[i]) { //? cherche si un des mots entree est une commande connue (sans if/else if/...)

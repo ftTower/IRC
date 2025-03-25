@@ -59,6 +59,6 @@ void	Channel::setModes(t_mode mode, bool toSet) {
     }
 }
 
-void Channel::setTopic(std::string Topic) {
+void Channel::setTopic(std::string &Topic) {
     topic = Topic;
 }

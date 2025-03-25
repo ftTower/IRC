@@ -39,7 +39,7 @@ public:
 	
 	//! setters
 	void 				setModes(t_mode mode, bool toSet);
-	void				setTopic(std::string topic);
+	void				setTopic(std::string &topic);
 	void				setPassword(std::string password);
 	void 				addClient(Client &newClient);
 	void 				addOperator(Client &newClient);

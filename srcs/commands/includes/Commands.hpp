@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 11:11:32 by lleciak           #+#    #+#             */
-/*   Updated: 2025/01/30 14:32:38 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/03/25 13:58:27 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	quit_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void	mode_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd);
-void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd);
 
 void	handleCmds(Server &serv, int fd, char buff[1024]);

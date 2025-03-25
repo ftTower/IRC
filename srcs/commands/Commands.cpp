@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 09:40:19 by lleciak           #+#    #+#             */
-/*   Updated: 2025/03/25 12:28:14 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/03/25 16:11:38 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,8 @@ void	join_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 		Send(fd, msg);
 		throw(std::runtime_error("Cannot join channel (+k) - wrong key"));
 	}
+	std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + serv.getChan(cmd[1]).getChanName() + " :" + serv.getChan(cmd[1]).getTopic() + "\r\n";
+	Send(fd, msg);		
 
 	serv.addClientToChannel(fd, cmd[1]);
 	serv.findClientFd(fd).addChannelToList(cmd[1]);
@@ -248,9 +250,22 @@ void part_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 			client.removeChannelToList(channels[i]);
 		}
 
-		//! Send part message to channel
-		std::string partMsg = ":" + client.nickName() + " PART " + channels[i] + " :" + reason + "\r\n";
-		serv.sendMessage(channels, partMsg, client);
+		 // Crée le message PART que le client va recevoir
+		 std::string partMsg = ":" + client.nickName() + " PART " + channels[i];
+
+		 // Ajoute la raison si fournie
+		 if (!reason.empty()) {
+			 partMsg += " :" + reason;
+		 }
+		 partMsg += "\r\n";
+ 
+		 // Envoi du message PART au serveur pour indiquer que le client part du canal
+		 Send(fd, partMsg);
+ 
+		 // Envoi de la confirmation au client pour qu'il sache qu'il a quitté le canal
+		 std::string reply = ":server 366 " + client.nickName() + " " + channels[i] + " :You're no longer in the channel\r\n";
+		 Send(fd, reply);
+ 
 	}
 }
 
@@ -439,7 +454,7 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	Channel &Chan = serv.getChan(cmd[1]);
 	
 	if (cmd.size() == 2) {
-		if (Chan.getTopic().empty()) { //! pas de topic set
+		if (Chan.getTopic() == "krkrkrkrkkr") { //! pas de topic set
 			std::string msg = ":myserver 331 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :No topic is set\r\n";
 			Send(fd, msg);
 		} else { //! send le topic
@@ -449,14 +464,24 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	}
 	else { 
 		if (!Chan.isClientOperator(serv.findClientFd(fd)) && Chan.getModes()[MODE_TOPIC]) { //! verifie que le client et operateur pour changer le topic
+			Chan.kickClient(fd);
 			std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :You're not a channel operator\r\n";
 			Send(fd, msg);
-			throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
+			throw();
+			}
+		std::string topic;
+		for (size_t i = 2; cmd.size() > 2 && i < cmd.size(); i++) {
+			if (i == 2)
+				cmd[i].erase(cmd[i].begin(), cmd[i].begin() + 1 );
+			topic += cmd[i];
 		}
-		Chan.setTopic(cmd[2]); //! change le topic et le send
-		std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + cmd.back() + "\r\n";
-		// Send(fd, msg);
-		serv.sendMessage(Chan.getUsersListNick(), msg, serv.findClientFd(fd));
+		Chan.setTopic(topic); //! change le topic et le send
+		std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + topic + "\r\n";
+
+		for (size_t i = 0; i < Chan.getUsersList().size(); i++) {
+			Send(Chan.getUsersList()[i].Fd(), msg);		
+		}
+		
 	}
 }
 
@@ -499,56 +524,19 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 		//!send le kick aux users connecte
 		Client &client = serv.findClientNick(users[i]);
-		std::vector<std::string> vec;
-		vec.push_back(client.nickName());
+		
 		channel.kickClient(client.Fd());
 		client.removeChannelToList(channelName);
 
 		std::string kickMsg = ":" + serv.findClientFd(fd).nickName() + " KICK " + channelName + " " + client.nickName() + " :" + comment + "\r\n";
-		serv.sendMessage(vec, kickMsg, serv.findClientFd(fd));
+		Send(client.Fd(), kickMsg);
+
+		std::string Msg = ":myserver 353 " + serv.findClientFd(fd).nickName() + " " + channelName + " " + client.nickName() + " :KICKED " + comment + "\r\n";
+		Send(client.Fd(), Msg);
+
 	}
 }
 
-void    who_cmd(Server &serv, int fd, std::vector<std::string> cmd){
-	if (cmd.size() < 2) {
-		std::string msg = ":myserver 461 " + serv.findClientFd(fd).nickName() + " WHO :Not enough parameters\r\n";
-		Send(fd, msg);
-		throw std::runtime_error("Not enough parameters for WHO command from " + serv.findClientFd(fd).nickName());
-	}
-
-	std::string mask = cmd[1];
-	std::vector<std::string> response;
-
-	if (serv.channelExist(mask)) {
-		Channel &channel = serv.getChan(mask);
-		std::vector<Client> clients = channel.getUsersList();
-		for (size_t i = 0; i < clients.size(); ++i) {
-			response.push_back(clients[i].nickName());
-		}
-	} else if (serv.isNickUsed(mask, 10000)) {
-		response.push_back(serv.findClientNick(mask).nickName());
-	} else {
-		std::vector<Client> clients = serv.getAllClients();
-		for (size_t i = 0; i < clients.size(); ++i) {
-			response.push_back(clients[i].nickName());
-		}
-	}
-
-	if (response.empty()) {
-		std::string msg = ":myserver 315 " + serv.findClientFd(fd).nickName() + " " + mask + " :End of WHO list\r\n";
-		Send(fd, msg);
-		return;
-	}
-
-	for (size_t i = 0; i < response.size(); ++i) {
-		std::string msg = ":myserver 352 " + serv.findClientFd(fd).nickName() + " " + response[i] + "\r\n";
-		Send(fd, msg);
-	}
-
-	std::string endMsg = ":myserver 315 " + serv.findClientFd(fd).nickName() + " " + mask + " :End of WHO list\r\n";
-	Send(fd, endMsg);
-	
-}
 
 // aligner les :
 void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd){
@@ -585,21 +573,11 @@ void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd){
 
 
 std::vector<std::string> splitString(std::string str, char sep){
-	bool div = false;
-	std::string newStr;
-	if (str.find('[') != str.npos){
-		newStr = str.substr(str.find('['));
-		div = true;
-	}
 	std::stringstream split(str);
-	if (div)
-		std::stringstream split(newStr);
 	std::string segment;
 	std::vector<std::string> commands;
 	while (std::getline(split, segment, sep)){
 		commands.push_back(segment);
 	}
-	if (div)
-		commands.push_back(str.substr(str.find('['), str.find(']')));
 	return (commands);
 }
