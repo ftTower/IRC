@@ -1,5 +1,5 @@
 
-# **FT_IRC**
+# **🇬🇧 FT_IRC**
 
 FT_IRC is a simple implementation of an **IRC (Internet Relay Chat) server** in C++.
 This project aims to provide a basic understanding of how IRC servers work and how they can be implemented from scratch.
@@ -184,7 +184,7 @@ FT_IRC supports several **standard IRC commands**, allowing users to interact wi
 
 ---
 
-# **FT_IRC**  
+# **🇨🇵 FT_IRC**  
 
 FT_IRC est une implémentation simple d’un **serveur IRC (Internet Relay Chat)** en C++.  
 Ce projet vise à fournir une compréhension de base du fonctionnement des serveurs IRC et de leur mise en œuvre à partir de zéro.  
