@@ -49,7 +49,7 @@ void	parseCmd(Server &serv, int fd, std::string cmd)
 		commands[0].erase(std::remove_if(commands[0].begin(), commands[0].end(), ::isspace), commands[0].end()); //? enleve les isspaces
 		// std::cout << serv.getPass() << " " << !client.getAuthenticated() << " [" << commands[0] << "]\n";
 		if (serv.getPass() && !client.getAuthenticated() && (commands[0] != "PASS" && commands[0] != "CAP")) { //? si mdp et client pas authentifie refuse
-			std::string msg = ":myserver 462 * :You may not reregister 2\r\n";
+			std::string msg = ":myserver 462 * :You may not reregister \r\n";
 			std::stringstream ss;
 			ss << fd;
 			serv.addError(ss.str() + " is trying to " + commands[0] + " without registration");

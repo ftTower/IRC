@@ -464,10 +464,10 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	}
 	else { 
 		if (!Chan.isClientOperator(serv.findClientFd(fd)) && Chan.getModes()[MODE_TOPIC]) { //! verifie que le client et operateur pour changer le topic
-			Chan.kickClient(fd);
 			std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :You're not a channel operator\r\n";
 			Send(fd, msg);
-			throw();
+			Chan.kickClient(fd);
+			throw std::runtime_error("You're not a channel operator");
 			}
 		std::string topic;
 		for (size_t i = 2; cmd.size() > 2 && i < cmd.size(); i++) {
@@ -508,11 +508,11 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 	Channel &channel = serv.getChan(channelName);
 
 	if (!channel.isClientOperator(serv.findClientFd(fd))) { //! si client pas operateur par de kick
-		std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + channelName + " :You're not a channel operator\r\n";
+		channel.kickClient(fd);
+		std::string msg = ":myserver 482 " + serv.findClientFd(fd).nickName() + " " + cmd[1] + " :You're not a channel operator\r\n";
 		Send(fd, msg);
 		throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
 	}
-
 	for (size_t i = 0; i < users.size(); ++i) {
 		users[i].erase(std::remove_if(users[i].begin(), users[i].end(), ::isspace), users[i].end());
 
@@ -533,7 +533,7 @@ void	kick_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 
 		std::string Msg = ":myserver 353 " + serv.findClientFd(fd).nickName() + " " + channelName + " " + client.nickName() + " :KICKED " + comment + "\r\n";
 		Send(client.Fd(), Msg);
-
+		
 	}
 }
 
