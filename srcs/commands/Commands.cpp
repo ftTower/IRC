@@ -6,7 +6,7 @@
 /*   By: lleciak <lleciak@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 09:40:19 by lleciak           #+#    #+#             */
-/*   Updated: 2025/01/30 14:53:46 by lleciak          ###   ########.fr       */
+/*   Updated: 2025/03/25 12:28:14 by lleciak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -454,8 +454,9 @@ void	topic_cmd(Server &serv, int fd, std::vector<std::string> cmd)
 			throw std::runtime_error("User " + serv.findClientFd(fd).nickName() + " is not a channel operator.");
 		}
 		Chan.setTopic(cmd[2]); //! change le topic et le send
-		std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + cmd[2] + "\r\n";
-		Send(fd, msg);
+		std::string msg = ":myserver 332 " + serv.findClientFd(fd).nickName() + " " + Chan.getChanName() + " :" + cmd.back() + "\r\n";
+		// Send(fd, msg);
+		serv.sendMessage(Chan.getUsersListNick(), msg, serv.findClientFd(fd));
 	}
 }
 
@@ -584,12 +585,21 @@ void    whois_cmd(Server &serv, int fd, std::vector<std::string> cmd){
 
 
 std::vector<std::string> splitString(std::string str, char sep){
-
+	bool div = false;
+	std::string newStr;
+	if (str.find('[') != str.npos){
+		newStr = str.substr(str.find('['));
+		div = true;
+	}
 	std::stringstream split(str);
+	if (div)
+		std::stringstream split(newStr);
 	std::string segment;
 	std::vector<std::string> commands;
 	while (std::getline(split, segment, sep)){
 		commands.push_back(segment);
 	}
+	if (div)
+		commands.push_back(str.substr(str.find('['), str.find(']')));
 	return (commands);
 }
