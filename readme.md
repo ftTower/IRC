@@ -4,6 +4,10 @@
 FT_IRC is a simple implementation of an **IRC (Internet Relay Chat) server** in C++.
 This project aims to provide a basic understanding of how IRC servers work and how they can be implemented from scratch.
 
+
+![server_side](https://github.com/ftTower/ftTower/blob/main/assets/IRC/server_side.png)
+
+
 ## **Getting Started**
 
 ### **Prerequisites**
