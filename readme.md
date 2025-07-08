@@ -147,6 +147,8 @@ The server handles:
 
 ---
 
+![logs](https://github.com/ftTower/ftTower/blob/main/assets/IRC/logs.png)
+
 ## **Features**
 
 - **User connections** with nickname management.
